@@ -30,6 +30,7 @@ def read_file(label: str,
 
     return df
 
+
 # Plot tweet frequency over time
 def plot_tweet_freq(data: pd.DataFrame,
                     x_column: str,
@@ -42,12 +43,12 @@ def plot_tweet_freq(data: pd.DataFrame,
   fig = go.Figure(data = go.Scatter(x = data[x_column].astype(dtype=str), 
                                     y = data[y1_column],
                                     name = line1_name,
-                                    line = dict(color = 'black', width = 3)))
+                                    line = dict(color = 'black', width = 4)))
         
   fig.add_trace(go.Scatter(x = data[x_column],
                            y = data[y2_column],
                            mode = 'lines',
-                           line = go.scatter.Line(color = 'rgb(49,130,189)', width = 3),
+                           line = dict(shape = 'spline', color = 'rgb(49,130,189)', width = 4.5),
                            name = line2_name))      
 
   fig.update_layout(height = 500, 
@@ -64,7 +65,7 @@ def plot_tweet_freq(data: pd.DataFrame,
                                   font = dict(size = 22)),
                     yaxis = dict(tickfont = dict(size = 25), color = 'grey'),
                     xaxis = dict(tickfont = dict(size = 25), color = 'grey'),
-                    xaxis_range = [datetime.datetime(2021, 1, 1),
+                    xaxis_range = [datetime.datetime(2020, 12, 15),
                                    datetime.datetime(2021, 12, 31)])
      
   fig.update_xaxes(tickformat = '%b %d')
@@ -72,18 +73,89 @@ def plot_tweet_freq(data: pd.DataFrame,
   return fig
 
 
+# Plot compound sentiment score
+def plot_sentiment(data: pd.DataFrame, 
+                   data2: pd.DataFrame,
+                   x_column: str,
+                   y_column: str, 
+                   x1_column: str,
+                   mean: str,
+                   upper: str,
+                   lower: str,
+                   line_name: str,
+                   line1_name: str,
+                   title: str):
+                   
+    fig = go.Figure([go.Scatter(x = data2[x1_column],
+                                y = data2[mean],
+                                name = line_name,
+                                line = dict(color = 'black', width = 4)),
+                       
+                     go.Scatter(name='Upper Bound',
+                                x = data2[x1_column],
+                                y = data2[upper],
+                                mode = 'lines',
+                                marker = dict(color="#444"),
+                                fillcolor = 'rgba(68, 68, 68, 0.3)',
+                                fill = 'tonexty',
+                                line = dict(width=0),
+                                showlegend = False),
 
-# plot hashtags frequency
+                      go.Scatter(name = 'Lower Bound',
+                                 x = data2[x1_column],
+                                 y = data2[lower],
+                                 marker = dict(color="#444"),
+                                 line = dict(width=0),
+                                 mode = 'lines',
+                                 fillcolor = 'rgba(68, 68, 68, 0.3)',
+                                 fill = 'tonexty',
+                                 showlegend = False)])
+
+    fig.add_trace(go.Scatter(x = data[x_column],
+                             y = data[y_column],
+                             mode = 'lines',
+                             line = dict(shape = 'spline', color = 'orange', width = 4.5),
+                             name = line1_name))
+ 
+    fig.update_layout(height = 900, 
+                      width = 800, 
+                      title = title,
+                      title_font_size = 50,
+                      title_font = dict(color = 'black'),
+                      title_x = 0.5, 
+                      title_y = 0.95,
+                      showlegend = True,
+                      hovermode = "x",
+                      legend = dict(x = 0.99,
+                                    yanchor = 'top',
+                                    xanchor = 'right',
+                                    font = dict(size = 20)),
+                      yaxis = dict(tickfont = dict(size = 20), color = 'grey'),
+                      xaxis = dict(tickfont = dict(size = 25), color = 'grey'),
+                      xaxis_range = [datetime.datetime(2020, 12, 15),
+                                     datetime.datetime(2022, 1, 1)])
+           
+
+    fig.update_yaxes(autorange=False, range = [-2.00, 2.00], dtick = 0.25)
+
+      
+    fig.add_hrect(y0 = 0, y1 = -2.0,  line_width = 0, fillcolor = 'red', opacity = 0.05)
+    fig.add_hrect(y0 = 0, y1 = 2.0, line_width = 0, fillcolor = 'green', opacity = 0.05)
+
+    return fig
+
+
+# Plot hashtags frequency
 def plot_bar_freq(data: pd.DataFrame,
                   x_column: str,
                   y_column: str,
-                  title_text: str,
-                  colorscale: str):
+                  title_text: str, 
+                  colourscale: list):
     
     fig = go.FigureWidget(data=[go.Bar(x = data[x_column], 
                                        y = data[y_column], 
                                        orientation='h', 
-                                       marker={'color': data[x_column], 'colorscale': colorscale})]) 
+                                       marker = dict(color = data[x_column], colorscale = colourscale))])
 
     fig.update_layout(title_text = title_text, 
                       title_font_size = 50,

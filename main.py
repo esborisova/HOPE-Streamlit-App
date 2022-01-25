@@ -70,14 +70,36 @@ st.markdown(f""" <style>
     }} </style> """, unsafe_allow_html=True)
 
 
+
+
+pallette0 =[[0, "#F0E442"],    #yellow
+            [0.01, "#d62728"], #brick red
+            [0.03, "#800080"], #purple
+            [1.0, "#000000"]]  #black 
+ 
+# Blues 
+pallette1 =[[0, "#f8fcfd"],   
+            [0.01, "#e9f5f8"], 
+            [0.02, "#cbe6ef"], 
+            [0.04, "#bcdfeb"],
+            [0.07, "#62b4cf"],
+            [1.0, "#00008b"]]  
+
+
+
 def main():
 
     menu = st.sidebar.selectbox('MENU', ['Restriktion', 'Genåb'])
-    navigator = st.sidebar.radio('NAVIGATE TO', ['Tweet Frequency', 'Sentiment', 'Hashtags', 'Word Frequency', 'Bigrams', 'WordCloud'])
+    navigator = st.sidebar.radio('NAVIGATE TO', ['Tweet Frequency', 
+                                                 'Sentiment', 
+                                                 'Hashtag Frequency', 
+                                                 'Word Frequency', 
+                                                 'Bigrams', 
+                                                 'WordCloud'])
     
 
     if navigator == 'Tweet Frequency':
-        st.title('Tweet Frequency Over Time') 
+       # st.title('Tweet Frequency Over Time') 
 
         df = read_file(label = menu, 
                        folder = '_streamlit/',
@@ -95,18 +117,52 @@ def main():
         st.plotly_chart(fig, use_container_width = True)
 
     elif navigator == 'Sentiment':
-           st.title('Sentiment Over Time')
-           st.write("""
-           - Centered sentiment score
-           """)
+        #   st.title('Sentiment Over Time')
+           st.subheader('Centered sentiment score')
+           df0 = read_file(label = menu, 
+                         folder = '_streamlit/',
+                         data_prefix = '.pkl') 
 
-           st.write("""
-           - Z polarity score
-           """)
+           df1 = read_file(label = menu, 
+                         folder = '_streamlit/',
+                         data_prefix = '_sentiment.pkl') 
+        
+           
+           fig = plot_sentiment(df0, 
+                                df1,
+                                x_column = 'date',
+                                y_column = 's200_compound', 
+                                x1_column = 'date',
+                                mean = 'compound_mean',
+                                upper = 'compound_upper',
+                                lower = 'compound_lower',
+                                line_name = 'Centered sentiment score',
+                                line1_name = 'Smoothed',
+                                title = 'Sentiment') 
 
 
-    elif navigator == 'Hashtags':
-          st.title('Hashtags Frequency') 
+           st.plotly_chart(fig, use_container_width = True)
+
+           st.subheader('Z polarity score')
+           fig1 = plot_sentiment(df0, 
+                                 df1,
+                                 x_column = 'date',
+                                 y_column = 'polarity_score_z_smoothed', 
+                                 x1_column = 'date',
+                                 mean = 'z_mean',
+                                 upper = 'z_upper',
+                                 lower = 'z_lower',
+                                 line_name = 'z(Polarity score)',
+                                 line1_name = 'Smoothed',
+                                 title = 'Sentiment') 
+
+
+           st.plotly_chart(fig1, use_container_width = True)
+
+
+
+    elif navigator == 'Hashtag Frequency':
+         # st.title('Hashtags Frequency') 
 
           df = read_file(label = menu, 
                          folder = '_streamlit/',
@@ -114,17 +170,18 @@ def main():
 
           df = df.sort_values('nr_of_hashtags', ascending = True)
 
+
           fig = plot_bar_freq(data = df,
                                x_column = 'nr_of_hashtags',
                                y_column = 'hashtag',
-                               title_text = 'Most Frequent Hashtags',
-                               colorscale = 'inferno')
+                               title_text = 'Most Frequent Hashtags', 
+                               colourscale = pallette0)
 
           st.plotly_chart(fig, use_container_width = True)
 
 
     elif navigator == 'Word Frequency':
-        st.title('Word Frequency')
+       # st.title('Word Frequency')
 
         df = read_file(label = menu, 
                          folder = '_streamlit/',
@@ -135,14 +192,14 @@ def main():
         fig = plot_bar_freq(data = df,
                             x_column = 'Frequency',
                             y_column = 'word',
-                            title_text = 'Most Frequent Words',
-                            colorscale = 'brwnyl')
+                            title_text = 'Most Frequent Words', 
+                            colourscale = pallette1)
 
         st.plotly_chart(fig, use_container_width = True)
      
 
     elif navigator == 'Bigrams':
-         st.title('Bigrams')
+      #   st.title('Bigrams')
 
          df1 = read_file(label = menu, 
                          folder = '_streamlit/',
@@ -162,7 +219,14 @@ def main():
          st.bokeh_chart(plot, use_container_width=True)
 
     elif navigator == 'WordCloud':
-         st.title('WordCloud')
+       #  st.title('WordCloud')
+
+         name = menu.lower()
+         path = name + '_streamlit/' + name + '_wordcloud.png'
+
+         st.image(path)
+             
+
 
     else:
              raise ValueError('Invalid input data!')
