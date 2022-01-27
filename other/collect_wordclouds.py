@@ -10,8 +10,8 @@ import spacy
 
 
 def read_pkl(argument,
-            path: str,
-            data_prefix: str):
+             path: str,
+             data_prefix: str):
     """Reads pickle file
     
     
