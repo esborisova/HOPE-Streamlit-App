@@ -31,5 +31,5 @@ If the installation worked, Streamlit's Hello app will appear in a new tab in a 
 
 5. Run the following command line to see the app:
 ```python
-streamlit run man.py
+streamlit run main.py
 ```
