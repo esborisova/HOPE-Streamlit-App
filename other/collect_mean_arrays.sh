@@ -1,10 +1,9 @@
 #!/bin/bash
 
-
 file_names=('genåb'
             'restriktion'
             '17jan'
-            'corona');
+            'corona'
             'coronapas'
             'lockdown'
             'mettef'
