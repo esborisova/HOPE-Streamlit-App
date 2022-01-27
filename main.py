@@ -1,6 +1,3 @@
-from cProfile import label
-from fileinput import filename
-from tkinter import font
 from _plotly_utils.utils import find_closest_string
 import streamlit as st
 import plotly.express as px

@@ -5,10 +5,59 @@ import os
 import sys
 
 
+
+
+def read_pkl(argument,
+              path: str,
+              data_prefix: str):
+    """Reads pickle file
+    
+    
+    Args:
+        argument: The argument passed to the bash script
+
+        path (str): The path to the folder with files 
+    
+        data_prefix (str): The file name prefix 
+    
+    
+    Returns:
+          pd.DataFrame: The pandas dataframe with data
+    """
+
+    label = argument.lower()
+
+    filename =  label + data_prefix
+    new_path = path + label + '/' + filename
+
+    df = pd.read_pickle(new_path)  
+
+    return df
+
+
+
+
 def compute_ci(data: pd.DataFrame,
                array: str,
                upper_bound: str,
-               lower_bound: str):
+               lower_bound: str) -> pd.DataFrame:
+
+    """Computes 95% confidence interval (CI
+    
+    
+    Args:
+        data (str): The dataframe with the dataset
+
+        array (str): The dataframe column with arrays of values
+
+        upper_bound (str): The name of the output dataframe column with CI upper bound values
+
+        lower_bound (str): The name of the output dataframe column with CI lower bound values
+    
+    
+    Returns:
+          pd.DataFrame: The input dataframe with two new columns (upper and lower bound values)
+    """
 
     data[upper_bound] = 0.0
     data[lower_bound] = 0.0
@@ -24,28 +73,34 @@ def compute_ci(data: pd.DataFrame,
 
 
 
-def read_file(argument,
-              folder: str,
-              data_prefix: str):
+
+def save_pkl(dataset: pd.DataFrame, 
+             argument, 
+             path: str,
+             data_prefix: str):
+    """Saves data to pickle file
+    
+    
+    Args:
+        dataset: The dataframe to save
+
+        argument: The argument passed to the bash script
+
+        path (str): The path to the main folder
+    
+        data_prefix (str): The file name prefix 
+    """
 
     label = argument.lower()
-    df = pd.read_pickle('data/' + label + folder + label + data_prefix)  
+    new_path = path + label + '/'
+    filename =  label + data_prefix
+    new_path = new_path + filename
 
-    return df
-
-
-def create_pkl(dataset: pd.DataFrame, 
-               argument, 
-               folder: str,
-               data_prefix: str):
-
-    label = argument.lower()
-
-    dataset.to_pickle('data/' + label + folder + label + data_prefix)  
+    dataset.to_pickle(new_path)  
 
   
 
-df = read_file(str(sys.argv[1]), '_streamlit/', '.pkl')
+df = read_pkl(str(sys.argv[1]), 'data/', '.pkl')
 
 # Create df with dates and sentiment scores
 df0 = df.filter(['date', 'centered_compound', 'polarity_score_z'], axis=1)
@@ -101,4 +156,4 @@ merged_z= pd.merge(df_z, mean_z, on = 'date')
 df_merged = pd.merge(merged_compound, merged_z, on = 'date')
 
 # Save df to pickle
-create_pkl(df_merged, str(sys.argv[1]), '_streamlit/', '_sentiment.pkl')
+save_pkl(df_merged, str(sys.argv[1]), 'data/', '_sentiment.pkl')
