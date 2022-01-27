@@ -14,7 +14,7 @@ def read_file(argument,
               data_prefix: str):
 
     label = argument.lower()
-    df = pd.read_pickle(label + folder + label + data_prefix)  
+    df = pd.read_pickle('data/' + label + folder + label + data_prefix)  
 
     return df
 
@@ -28,7 +28,7 @@ def plot_cloud(wordcloud,
     plt.axis("off")
     plt.imshow(wordcloud)
     label = argument.lower()
-    path = label + '_streamlit/' + label + '_wordcloud.png'
+    path = 'data/' + label + '_streamlit/' + label + '_wordcloud.png'
 
     if save:
         plt.savefig(path)

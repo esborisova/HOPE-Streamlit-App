@@ -29,7 +29,7 @@ def read_file(argument,
               data_prefix: str):
 
     label = argument.lower()
-    df = pd.read_pickle(label + folder + label + data_prefix)  
+    df = pd.read_pickle('data/' + label + folder + label + data_prefix)  
 
     return df
 
@@ -41,7 +41,7 @@ def create_pkl(dataset: pd.DataFrame,
 
     label = argument.lower()
 
-    dataset.to_pickle(label + folder + label + data_prefix)  
+    dataset.to_pickle('data/' + label + folder + label + data_prefix)  
 
   
 

@@ -1,11 +1,9 @@
-from tkinter import font
 from _plotly_utils.utils import find_closest_string
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 import seaborn as sns
-import datetime
 import networkx as nx
 from icecream import ic
 from nltk.util import bigrams 
@@ -21,101 +19,175 @@ from bokeh.transform import linear_cmap
 
 
 
-def read_file(label: str,
-              folder: str,
-              data_prefix: str):
+def read_pkl(label: str,
+             path: str,
+             data_prefix: str) -> pd.DataFrame:
+
+    """Reads pickle file
+    
+    
+    Args:
+        label (str): The name of the selectbox (f.ex., Restriktion, Omicron, etc.)
+
+        path (str): The path to the folder with files 
+
+        data_prefix (str): The file name prefix (f.ex., restriktion_hash.pkl: Label — restriktion, prefix — _hash.pkl)
+    
+    
+    Returns:
+          pd.DataFrame: The pandas dataframe with data
+    """
 
     label = label.lower()
-    df = pd.read_pickle(label + folder + label + data_prefix)  
+
+    filename =  label + data_prefix
+    new_path = path + label + '/' + filename
+
+    df = pd.read_pickle(new_path)  
 
     return df
 
 
-# Plot tweet frequency over time
+
 def plot_tweet_freq(data: pd.DataFrame,
-                    x_column: str,
-                    y1_column: str,
-                    y2_column: str,
-                    line1_name: str,
-                    line2_name: str,
-                    title: str):
+                    x: str,
+                    y: str,
+                    y_smoothed: str,
+                    line_name: str,
+                    line_smoothed_name: str, 
+                    title: str, 
+                    xaxis_range: list):
 
-  fig = go.Figure(data = go.Scatter(x = data[x_column].astype(dtype=str), 
-                                    y = data[y1_column],
-                                    name = line1_name,
-                                    line = dict(color = 'black', width = 4)))
+    """Plots the line graph showing tweet frequency per day 
+    
+    
+    Args:
+        data (pd.DataFrame): The pandas dataframe with data
+
+        x (str): The dataframe column with x values (dates)
+
+        y (str): The dataframe column with y values (number of tweets)
+
+        y_smoothed (str): The dataframe column with smoothed y values 
+
+        line_name (str): The name of the line showing number of tweets per day
+
+        line_smoothed_name (str): The name of the line showing smoothed number of tweets values per day
+
+        title: The title of the line plot
+       
+        xaxis_range: The range of X axis 
+    
+    
+    Returns:
+          fig: The line plot
+    """
+
+    fig = go.Figure(data = go.Scatter(x = data[x].astype(dtype=str), 
+                                      y = data[y],
+                                      name = line_name,
+                                      line = dict(color = 'black', width = 4)))
         
-  fig.add_trace(go.Scatter(x = data[x_column],
-                           y = data[y2_column],
-                           mode = 'lines',
-                           line = dict(shape = 'spline', color = 'rgb(49,130,189)', width = 4.5),
-                           name = line2_name))      
+    fig.add_trace(go.Scatter(x = data[x],
+                             y = data[y_smoothed],
+                             mode = 'lines',
+                             line = dict(color = 'rgb(49,130,189)', width = 4.5),
+                             name = line_smoothed_name))      
 
-  fig.update_layout(height = 500, 
-                    width = 600, 
-                    title = title,
-                    title_font_size = 50,
-                    title_font = dict(color = 'black'),
-                    title_x = 0.5, 
-                    title_y = 0.95,
-                    showlegend = True,
-                    legend = dict(x = 0.99,
+    fig.update_layout(height = 600, 
+                      width = 700, 
+                      title = title,
+                      title_font_size = 50,
+                      title_font = dict(color = 'black'),
+                      title_x = 0.5, 
+                      title_y = 0.98,
+                      showlegend = True,
+                      legend = dict(x = 0.99,
                                   yanchor = 'top',
                                   xanchor = 'right',
                                   font = dict(size = 22)),
-                    yaxis = dict(tickfont = dict(size = 25), color = 'grey'),
-                    xaxis = dict(tickfont = dict(size = 25), color = 'grey'),
-                    xaxis_range = [datetime.datetime(2020, 12, 15),
-                                   datetime.datetime(2021, 12, 31)])
+                      yaxis = dict(tickfont = dict(size = 25), color = 'grey'),
+                      xaxis = dict(tickfont = dict(size = 25), color = 'grey'),
+                      xaxis_range = xaxis_range)
      
-  fig.update_xaxes(tickformat = '%b %d')
+    fig.update_xaxes(tickformat = '%b %d')
 
-  return fig
+    return fig
 
 
-# Plot compound sentiment score
-def plot_sentiment(data: pd.DataFrame, 
-                   data2: pd.DataFrame,
-                   x_column: str,
-                   y_column: str, 
-                   x1_column: str,
-                   mean: str,
-                   upper: str,
+
+
+def plot_sentiment(data: pd.DataFrame,  
+                   data_smoothed: pd.DataFrame,
+                   x: str, 
+                   y: str, 
+                   y_smoothed: str,  
+                   upper: str, 
                    lower: str,
-                   line_name: str,
-                   line1_name: str,
-                   title: str):
-                   
-    fig = go.Figure([go.Scatter(x = data2[x1_column],
-                                y = data2[mean],
-                                name = line_name,
-                                line = dict(color = 'black', width = 4)),
+                   line_name: str, 
+                   line_smoothed_name: str, 
+                   title: str,
+                   xaxis_range: str):
+
+    """Plots the line graph showing sentiment per day 
+    
+    
+    Args:
+        data (pd.DataFrame): The pandas dataframe with sentiment compound/z scores 
+        
+        data_smothed (pd.DataFrame): The pandas dataframe with smoothed compound/z sentiment scores
+
+        x (str): The dataframe column with x values (dates)
+
+        y (str): The dataframe column with y values (sentiment compound/z scores)
+
+        y_smoothed (str): The dataframe column with smoothed y values for the second line
+
+        line_name (str): The name of the line showing the average of sentimnet per day
+
+        line_smoothed_name (str): The name of the line showing smoothed sentiment scores per day 
+
+        title: The title of the line plot
+       
+        xaxis_range: The range of X axis 
+    
+    
+    Returns:
+          fig: The line plot
+    """
+    
+    fig = go.Figure()   
+
+    fig.add_trace(go.Scatter(x = data_smoothed[x],
+                             y = data_smoothed[y],
+                             name = line_name,
+                             line = dict(color = 'black', width = 4)))
                        
-                     go.Scatter(name='Upper Bound',
-                                x = data2[x1_column],
-                                y = data2[upper],
-                                mode = 'lines',
-                                marker = dict(color="#444"),
-                                fillcolor = 'rgba(68, 68, 68, 0.3)',
-                                fill = 'tonexty',
-                                line = dict(width=0),
-                                showlegend = False),
-
-                      go.Scatter(name = 'Lower Bound',
-                                 x = data2[x1_column],
-                                 y = data2[lower],
-                                 marker = dict(color="#444"),
-                                 line = dict(width=0),
-                                 mode = 'lines',
-                                 fillcolor = 'rgba(68, 68, 68, 0.3)',
-                                 fill = 'tonexty',
-                                 showlegend = False)])
-
-    fig.add_trace(go.Scatter(x = data[x_column],
-                             y = data[y_column],
+    fig.add_trace(go.Scatter(name='Upper Bound',
+                             x = data_smoothed[x],
+                             y = data_smoothed[upper],
                              mode = 'lines',
-                             line = dict(shape = 'spline', color = 'orange', width = 4.5),
-                             name = line1_name))
+                             marker = dict(color="#444"),
+                             fillcolor = 'rgba(68, 68, 68, 0.3)',
+                             fill = 'tonexty',
+                             line = dict(width=0),
+                             showlegend = False))
+
+    fig.add_trace(go.Scatter(name = 'Lower Bound',
+                             x = data_smoothed[x],
+                             y = data_smoothed[lower],
+                             marker = dict(color="#444"),
+                             line = dict(width=0),
+                             mode = 'lines',
+                             fillcolor = 'rgba(68, 68, 68, 0.3)',
+                             fill = 'tonexty',
+                             showlegend = False))
+
+    fig.add_trace(go.Scatter(x = data[x],
+                             y = data[y_smoothed],
+                             mode = 'lines',
+                             line = dict(color = 'orange', width = 4.5),
+                             name = line_smoothed_name))
  
     fig.update_layout(height = 900, 
                       width = 800, 
@@ -123,7 +195,7 @@ def plot_sentiment(data: pd.DataFrame,
                       title_font_size = 50,
                       title_font = dict(color = 'black'),
                       title_x = 0.5, 
-                      title_y = 0.95,
+                      title_y = 0.98,
                       showlegend = True,
                       hovermode = "x",
                       legend = dict(x = 0.99,
@@ -132,36 +204,54 @@ def plot_sentiment(data: pd.DataFrame,
                                     font = dict(size = 20)),
                       yaxis = dict(tickfont = dict(size = 20), color = 'grey'),
                       xaxis = dict(tickfont = dict(size = 25), color = 'grey'),
-                      xaxis_range = [datetime.datetime(2020, 12, 15),
-                                     datetime.datetime(2022, 1, 1)])
+                      xaxis_range = xaxis_range)
            
 
     fig.update_yaxes(autorange=False, range = [-2.00, 2.00], dtick = 0.25)
 
       
-    fig.add_hrect(y0 = 0, y1 = -2.0,  line_width = 0, fillcolor = 'red', opacity = 0.05)
+    fig.add_hrect(y0 = 0, y1 = -2.0, line_width = 0, fillcolor = 'red', opacity = 0.05)
     fig.add_hrect(y0 = 0, y1 = 2.0, line_width = 0, fillcolor = 'green', opacity = 0.05)
 
     return fig
 
 
-# Plot hashtags frequency
-def plot_bar_freq(data: pd.DataFrame,
-                  x_column: str,
-                  y_column: str,
-                  title_text: str, 
-                  colourscale: list):
-    
-    fig = go.FigureWidget(data=[go.Bar(x = data[x_column], 
-                                       y = data[y_column], 
-                                       orientation='h', 
-                                       marker = dict(color = data[x_column], colorscale = colourscale))])
 
-    fig.update_layout(title_text = title_text, 
+def plot_bar_freq(data: pd.DataFrame,
+                  x: str,
+                  y: str,
+                  title: str, 
+                  colourscale: list):
+
+    """Plots the bar chart showing frequency of words/hashtags across the dataset
+    
+    
+    Args:
+        data (pd.DataFrame): The pandas dataframe with data
+
+        x (str): The dataframe column with x values (frequency)
+
+        y (str): The dataframe column with y values (words/hashtags)
+
+        title: The title of the bar chart
+       
+        colourscale: The colour palette for the bars
+    
+    
+    Returns:
+          fig: The bar chart
+    """
+    
+    fig = go.FigureWidget(data=[go.Bar(x = data[x], 
+                                       y = data[y], 
+                                       orientation='h', 
+                                       marker = dict(color = data[x], colorscale = colourscale))])
+
+    fig.update_layout(title_text = title, 
                       title_font_size = 50,
                       title_font = dict(color='grey'),
                       title_x = 0.5, 
-                      title_y = 0.95,
+                      title_y = 0.98,
                       yaxis = dict(tickfont = dict(size=18), color = 'grey'),
                       xaxis = dict(tickfont = dict(size=20), color = 'grey'))
 
@@ -170,8 +260,17 @@ def plot_bar_freq(data: pd.DataFrame,
 
 
 
-# Calculate word frequency
+
 def word_freq(data: pd.DataFrame) -> pd.DataFrame:
+    """Calculates word frequency
+    
+    Args:
+        data (pd.DataFrame): The pandas dataframe with data
+  
+    
+    Returns:
+          w_freq (pd.DataFrame): The dataframe with words and their frequency values
+    """
     
     w_freq = data.tokens_string.str.split(expand = True).stack().value_counts()
     w_freq = w_freq.to_frame().reset_index().rename(columns={'index': 'word', 0: 'Frequency'})
@@ -182,7 +281,6 @@ def word_freq(data: pd.DataFrame) -> pd.DataFrame:
 # Plot bigrams
 
 def plot_bigrams(data: pd.DataFrame,
-                 w_freq: pd.DataFrame,
                  title: str ):
 
 
@@ -202,7 +300,7 @@ def plot_bigrams(data: pd.DataFrame,
     pos = nx.spring_layout(G, k=k)
 
     # Nodes
-    d = w_freq.to_dict(orient = 'split')['data']
+    d = data.to_dict(orient = 'split')['data']
     d = [(int(word[1]))*2 for node in G.nodes() for word in d if word[0] == node]
 
     # Calculate degree for each node and add as node attribute

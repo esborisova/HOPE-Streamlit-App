@@ -1,8 +1,20 @@
 #!/bin/bash
 
 
-file_names=('genåb'
-            'restriktion');
+file_names=( 'genåb'
+             'restriktion'
+             '17jan'
+             'corona'
+             'coronapas'
+             'lockdown'
+             'mettef'
+             'mundbind'
+             'omicron'
+             'pressekonference'
+             'vaccin');
+
+        
+        
 
             
 
