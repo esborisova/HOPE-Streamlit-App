@@ -1,5 +1,6 @@
 from _plotly_utils.utils import find_closest_string
 import streamlit as st
+import math
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
@@ -52,27 +53,27 @@ def read_pkl(label: str,
 def plot_tweet_freq(data: pd.DataFrame,
                     x: str,
                     y: str,
-                    y_smoothed: str,
+                    y2: str,
                     line_name: str,
-                    line_smoothed_name: str, 
+                    line2_name: str, 
                     title: str, 
                     xaxis_range: list):
 
-    """Plots the line graph showing tweet frequency per day 
+    """Plots the line graph with two lines. It depics the distribution of two Y values across the same X values.
     
     
     Args:
-        data (pd.DataFrame): The pandas dataframe with data
+        data (pd.DataFrame): The pandas dataframe with x and y values
 
-        x (str): The dataframe column with x values (dates)
+        x (str): The dataframe column with x values 
 
-        y (str): The dataframe column with y values (number of tweets)
+        y (str): The dataframe column with first y values 
 
-        y_smoothed (str): The dataframe column with smoothed y values 
+        y2 (str): The dataframe column with second y values 
 
-        line_name (str): The name of the line showing number of tweets per day
+        line_name (str): The name of the line showing the distribution of the first y values
 
-        line_smoothed_name (str): The name of the line showing smoothed number of tweets values per day
+        line_smoothed_name (str): The name of the line showing the distribution of the second y values
 
         title: The title of the line plot
        
@@ -86,13 +87,14 @@ def plot_tweet_freq(data: pd.DataFrame,
     fig = go.Figure(data = go.Scatter(x = data[x].astype(dtype=str), 
                                       y = data[y],
                                       name = line_name,
+                                      mode = 'lines',
                                       line = dict(color = 'black', width = 4)))
         
-    fig.add_trace(go.Scatter(x = data[x],
-                             y = data[y_smoothed],
+    fig.add_trace(go.Scatter(x = data[x].astype(dtype=str),
+                             y = data[y2],
                              mode = 'lines',
                              line = dict(color = 'rgb(49,130,189)', width = 4.5),
-                             name = line_smoothed_name))      
+                             name = line2_name))      
 
     fig.update_layout(height = 600, 
                       width = 700, 
@@ -103,9 +105,9 @@ def plot_tweet_freq(data: pd.DataFrame,
                       title_y = 0.98,
                       showlegend = True,
                       legend = dict(x = 0.99,
-                                  yanchor = 'top',
-                                  xanchor = 'right',
-                                  font = dict(size = 22)),
+                                   yanchor = 'top',
+                                   xanchor = 'right',
+                                   font = dict(size = 22)),
                       yaxis = dict(tickfont = dict(size = 25), color = 'grey'),
                       xaxis = dict(tickfont = dict(size = 25), color = 'grey'),
                       xaxis_range = xaxis_range)
@@ -117,35 +119,32 @@ def plot_tweet_freq(data: pd.DataFrame,
 
 
 
-def plot_sentiment(data: pd.DataFrame,  
-                   data_smoothed: pd.DataFrame,
-                   x: str, 
-                   y: str, 
-                   y_smoothed: str,  
-                   upper: str, 
-                   lower: str,
-                   line_name: str, 
-                   line_smoothed_name: str, 
-                   title: str,
-                   xaxis_range: str):
+def plot_mean(data: pd.DataFrame, 
+              x: str, 
+              y: str, 
+              y2: str,  
+              upper: str, 
+              lower: str,
+              line_name: str, 
+              line2_name: str, 
+              title: str,
+              xaxis_range: str):
 
-    """Plots the line graph showing sentiment per day 
+    """Plots the line graph with two lines. It depics the distribution of two mean Y values across the same X values. It also shows the 95% confidence interval. 
     
     
     Args:
-        data (pd.DataFrame): The pandas dataframe with sentiment compound/z scores 
-        
-        data_smothed (pd.DataFrame): The pandas dataframe with smoothed compound/z sentiment scores
+        data (pd.DataFrame): The pandas dataframe with x and y values
 
-        x (str): The dataframe column with x values (dates)
+        x (str): The dataframe column with x values 
 
-        y (str): The dataframe column with y values (sentiment compound/z scores)
+        y (str): The dataframe column with the first mean y values 
 
-        y_smoothed (str): The dataframe column with smoothed y values for the second line
+        y2 (str): The dataframe column with the secind mean y values
 
-        line_name (str): The name of the line showing the average of sentimnet per day
+        line_name (str): The name of the line showing the distribution of the first y values
 
-        line_smoothed_name (str): The name of the line showing smoothed sentiment scores per day 
+        line_smoothed_name (str): The name of the line showing the distribution of the second y values
 
         title: The title of the line plot
        
@@ -158,14 +157,14 @@ def plot_sentiment(data: pd.DataFrame,
     
     fig = go.Figure()   
 
-    fig.add_trace(go.Scatter(x = data_smoothed[x],
-                             y = data_smoothed[y],
+    fig.add_trace(go.Scatter(x = data[x],
+                             y = data[y],
                              name = line_name,
                              line = dict(color = 'black', width = 4)))
                        
     fig.add_trace(go.Scatter(name='Upper Bound',
-                             x = data_smoothed[x],
-                             y = data_smoothed[upper],
+                             x = data[x],
+                             y = data[upper],
                              mode = 'lines',
                              marker = dict(color="#444"),
                              fillcolor = 'rgba(68, 68, 68, 0.3)',
@@ -174,8 +173,8 @@ def plot_sentiment(data: pd.DataFrame,
                              showlegend = False))
 
     fig.add_trace(go.Scatter(name = 'Lower Bound',
-                             x = data_smoothed[x],
-                             y = data_smoothed[lower],
+                             x = data[x],
+                             y = data[lower],
                              marker = dict(color="#444"),
                              line = dict(width=0),
                              mode = 'lines',
@@ -184,10 +183,10 @@ def plot_sentiment(data: pd.DataFrame,
                              showlegend = False))
 
     fig.add_trace(go.Scatter(x = data[x],
-                             y = data[y_smoothed],
+                             y = data[y2],
                              mode = 'lines',
                              line = dict(color = 'orange', width = 4.5),
-                             name = line_smoothed_name))
+                             name = line2_name))
  
     fig.update_layout(height = 900, 
                       width = 800, 
@@ -278,101 +277,126 @@ def word_freq(data: pd.DataFrame) -> pd.DataFrame:
     return w_freq
 
 
-# Plot bigrams
 
-def plot_bigrams(data: pd.DataFrame,
-                 title: str ):
+def dict_freq(freq:dict,
+              G,
+              scale: bool) -> dict:
+    """Creates a dictionary of words (present in bigrams) and their frequencies. 
+    
+    Args:
+        freq (dict): A dictionary with all words from the data corpus and their frequency values  
 
+        G: A Networkx graph
+
+        scale: A boolean value. If true, the logarithm of frequency values will be calculated  
+    
+    Returns:
+          freq_dict (dict): The dictionary containg words from bigrams and their frequencies
+    """
+
+    freq_dict = {}
+    
+    for node in G.nodes():
+        for word in freq:
+                 if word[0] == node:
+                     if scale == True:
+                         freq_dict[word[0]] = (math.log2(word[1]))*3 
+                     else:
+                         freq_dict[word[0]] = word[1]
+    return freq_dict
+
+
+
+def scale(data: dict) -> dict:
+    """Calculates logarithm base 2 and multiplies the result by 3.
+    
+    Args:
+        data (dict): A ditctionary with values
+
+    Returns:
+          data (dict): The input dictonary with updated values
+    
+    """
+
+    for key, value in data.items():
+        data[key] = (math.log2(value))*3
+
+    return data
+
+
+
+def plot_bigrams(G,
+                 word_freq: dict,
+                 co_occurence: dict,
+                 pos, 
+                 palette_nodes: list,
+                 palette_edges: list,  
+                 title: str):
 
     from bokeh.plotting import figure
 
-    # Create dictionary of bigrams and their counts
-    d = data.set_index('bigram').T.to_dict('records')
-    k = 4
+    nx.set_node_attributes(G, name = 'freq', values = word_freq)
+    nx.set_edge_attributes(G, name = 'co_occurence', values = co_occurence)
 
-    # Create network plot 
-    G = nx.Graph()
-
-    # Create connections between nodes
-    for key, value in d[0].items():
-        G.add_edge(key[0], key[1], weight=(value * 5))
-
-    pos = nx.spring_layout(G, k=k)
-
-    # Nodes
-    d = data.to_dict(orient = 'split')['data']
-    d = [(int(word[1]))*2 for node in G.nodes() for word in d if word[0] == node]
-
-    # Calculate degree for each node and add as node attribute
-    degrees = dict(nx.degree(G))
-    nx.set_node_attributes(G, name = 'degree', values = degrees)
-
-    #Slightly adjust degree so that the nodes with very small degrees are still visible
-    number_to_adjust_by = 10
-    adjusted_node_size = dict([(node, degree+number_to_adjust_by) for node, degree in nx.degree(G)])
-    nx.set_node_attributes(G, name = 'adjusted_node_size', values = adjusted_node_size)
-
-      
-    #Choose colors for node and edge highlighting
     node_highlight_color = Spectral4[1]
-    edge_highlight_color = Spectral4[2]
+    edge_highlight_color = Spectral4[2]   
 
-    #Choose attributes from G network to size and color by — setting manual size (e.g. 10) or color (e.g. 'skyblue') 
-    
-    size_by_this_attribute = 'adjusted_node_size'
-    color_by_this_attribute = 'adjusted_node_size'
+    color_nodes = 'freq'
+    color_edges = 'co_occurence'
 
-    #Pick a color palette — Blues8, Reds8, Purples8, Oranges8, Viridis8
-    color_palette = Blues8
-      
-    #Create a plot — set dimensions, toolbar, and title
+
     plot = figure(tools = 'pan,wheel_zoom,save,reset', 
                   active_scroll ='wheel_zoom',
                   title = title)
 
     plot.title.text_font_size = '20px'
 
+   # HOVER_TOOLTIPS = [("Frequency", "@freq")]
     plot.add_tools(HoverTool(tooltips=None), TapTool(), BoxSelectTool())
-
-    #Create a network graph object
+   
     network_graph = from_networkx(G, pos, scale = 10, center = (0, 0))
 
-    #Set node sizes and colors according to node degree (color as spectrum of color palette)
-    minimum_value_color = min(network_graph.node_renderer.data_source.data[color_by_this_attribute])
-    maximum_value_color = max(network_graph.node_renderer.data_source.data[color_by_this_attribute])
 
-    #Set node sizes and colors according to node degree (color as category from attribute)
+    min_col_val_node = min(network_graph.node_renderer.data_source.data[color_nodes])
+    max_col_val_node = max(network_graph.node_renderer.data_source.data[color_nodes])
 
-    network_graph.node_renderer.glyph = Circle(size = size_by_this_attribute, 
-                                               fill_color = linear_cmap(color_by_this_attribute, 
-                                                                        color_palette, 
-                                                                        minimum_value_color, 
-                                                                        maximum_value_color))  
 
-    #Set node highlight colors
-    network_graph.node_renderer.hover_glyph = Circle(size = size_by_this_attribute, 
+    min_col_val_edge = min(network_graph.edge_renderer.data_source.data[color_edges])
+    max_col_val_edge = max(network_graph.edge_renderer.data_source.data[color_edges])
+    
+    network_graph.node_renderer.glyph = Circle(size = 40, 
+                                               fill_color =  linear_cmap(color_nodes, 
+                                                                         palette_nodes, 
+                                                                         min_col_val_node, 
+                                                                         max_col_val_node),
+                                               fill_alpha = 1)  
+
+    network_graph.node_renderer.hover_glyph = Circle(size = 5, 
                                                      fill_color = node_highlight_color,
                                                      line_width = 3)
 
-    network_graph.node_renderer.selection_glyph = Circle(size = size_by_this_attribute, 
+    network_graph.node_renderer.selection_glyph = Circle(size = 5, 
                                                          fill_color = node_highlight_color, 
-                                                         line_width = 3)
+                                                         line_width = 5)
 
-    #Set edge opacity and width
-    network_graph.edge_renderer.glyph = MultiLine(line_alpha = 0.5, 
-                                                  line_width = 3)
+    network_graph.edge_renderer.glyph = MultiLine(line_alpha = 1, 
+                                                  line_color = linear_cmap(color_edges, 
+                                                                           palette_edges, 
+                                                                           min_col_val_edge, 
+                                                                           max_col_val_edge),
+                                                  line_width = 4)
 
-    #Set edge highlight colors
-    network_graph.edge_renderer.selection_glyph = MultiLine(line_color = edge_highlight_color, line_width = 3)
-    network_graph.edge_renderer.hover_glyph = MultiLine(line_color = edge_highlight_color, line_width = 3)
-    
-    #Highlight nodes and edges
+
+    network_graph.edge_renderer.selection_glyph = MultiLine(line_color = edge_highlight_color, line_width = 4)
+    network_graph.edge_renderer.hover_glyph = MultiLine(line_color = edge_highlight_color, line_width = 4)
+
+
     network_graph.selection_policy = NodesAndLinkedEdges()
     network_graph.inspection_policy = NodesAndLinkedEdges()
-      
+       
     plot.renderers.append(network_graph)
-
-
+    
+     
     x, y = zip(*network_graph.layout_provider.graph_layout.values())
     node_labels = list(G.nodes())
     source = ColumnDataSource({'x': x, 'y': y, 'name': [node_labels[i] for i in range(len(x))]})
@@ -381,9 +405,10 @@ def plot_bigrams(data: pd.DataFrame,
                       text = 'name', 
                       source = source, 
                       background_fill_color = 'pink', 
-                      text_font_size = '22px', 
+                      text_font_size = '24px', 
                       background_fill_alpha = .3)
 
     plot.renderers.append(labels)
 
     return plot
+

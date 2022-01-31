@@ -1,5 +1,6 @@
 from _plotly_utils.utils import find_closest_string
 import streamlit as st
+import math
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
@@ -7,8 +8,7 @@ import seaborn as sns
 import datetime
 import networkx as nx
 from icecream import ic
-from nltk.util import bigrams 
-import os
+from nltk.util import bigrams
 from bokeh.palettes import Spectral4
 from bokeh.models import (BoxSelectTool, Circle, EdgesAndLinkedNodes, HoverTool,
                           MultiLine, NodesAndLinkedEdges, Range1d, TapTool,
@@ -73,7 +73,7 @@ st.markdown(f""" <style>
 # Define palettes for bar charts #
 ##################################
 
-
+# Inferno
 palette0 =[[0, "#F0E442"],    #yellow
            [0.01, "#d62728"], #brick red
            [0.03, "#800080"], #purple
@@ -86,6 +86,15 @@ palette1 =[[0, "#f8fcfd"],
            [0.04, "#bcdfeb"],
            [0.07, "#62b4cf"],
            [1.0, "#00008b"]]  
+
+
+######################################
+# Define palettes for networks graph #
+######################################
+
+# Greens
+color_palette_nodes = ['#E0FFFF',  '#bcdfeb', '#62b4cf', '#1E90FF']
+color_palette_edges = ['#8fbc8f', '#3cb371', '#2e8b57', '#006400']
 
 
 ######################
@@ -120,25 +129,39 @@ def main():
         df = read_pkl(label = menu, 
                        path = 'data/',
                        data_prefix = '.pkl') 
+
         
+
         if menu == 'Omicron':
+           
           fig = plot_tweet_freq(data = df,
                                 x = 'date',
                                 y = 'nr_of_tweets',
-                                y_smoothed = 's500_nr_of_tweets',
+                                y2 = 's500_nr_of_tweets',
                                 line_name = 'Number of tweets',
-                                line_smoothed_name = 'Smoothed values',
+                                line2_name = 'Smoothed values',
                                 title = 'Frequency of Mentions', 
                                 xaxis_range = [datetime.datetime(2021, 11, 1),
+                                               datetime.datetime(2022, 1, 31)])
+
+        elif (menu == 'Vaccin') or (menu == 'Corona'):
+          fig = plot_tweet_freq(data = df,
+                                x = 'date',
+                                y = 'nr_of_tweets',
+                                y2 = 's5000_nr_of_tweets',
+                                line_name = 'Number of tweets',
+                                line2_name = 'Smoothed values',
+                                title = 'Frequency of Mentions', 
+                                xaxis_range = [datetime.datetime(2020, 11, 1),
                                                datetime.datetime(2022, 1, 31)])
 
         else:  
           fig = plot_tweet_freq(data = df,
                                 x = 'date',
                                 y = 'nr_of_tweets',
-                                y_smoothed = 's500_nr_of_tweets',
+                                y2 = 's500_nr_of_tweets',
                                 line_name = 'Number of tweets',
-                                line_smoothed_name = 'Smoothed values',
+                                line2_name = 'Smoothed values',
                                 title = 'Frequency of Mentions', 
                                 xaxis_range = [datetime.datetime(2020, 11, 1),
                                                datetime.datetime(2022, 1, 31)])
@@ -149,56 +172,49 @@ def main():
         #   st.title('Sentiment Over Time')
            st.subheader('Centered sentiment score')
 
-           df0 = read_pkl(label = menu, 
-                          path = 'data/',
-                          data_prefix = '.pkl') 
-
-           df1 = read_pkl(label = menu, 
+           df = read_pkl(label = menu, 
                           path = 'data/',
                           data_prefix = '_sentiment.pkl') 
         
            if menu == 'Omicron':
 
-             fig = plot_sentiment(df0, 
-                                  df1,
-                                  x = 'date',
-                                  y = 'compound_mean', 
-                                  y_smoothed = 's500_compound',                              
-                                  upper = 'compound_upper',
-                                  lower = 'compound_lower',
-                                  line_name = 'Centered sentiment score',
-                                  line_smoothed_name = 'Smoothed',
-                                  title = 'Sentiment',
-                                  xaxis_range = [datetime.datetime(2021, 11, 1),
-                                                datetime.datetime(2022, 1, 31)]) 
+             fig = plot_mean(df,
+                             x = 'date',
+                             y = 'compound_mean', 
+                             y2 = 's500_compound',                              
+                             upper = 'compound_upper',
+                             lower = 'compound_lower',
+                             line_name = 'Centered sentiment score',
+                             line2_name = 'Smoothed',
+                             title = 'Sentiment',
+                             xaxis_range = [datetime.datetime(2021, 11, 1),
+                                            datetime.datetime(2022, 1, 31)]) 
 
            elif (menu == 'Vaccin') or (menu == 'Corona'):
-             fig = plot_sentiment(df0, 
-                                  df1,
-                                  x = 'date',
-                                  y = 'compound_mean', 
-                                  y_smoothed = 's5000_compound',                              
-                                  upper = 'compound_upper',
-                                  lower = 'compound_lower',
-                                  line_name = 'Centered sentiment score',
-                                  line_smoothed_name = 'Smoothed',
-                                  title = 'Sentiment',
-                                  xaxis_range = [datetime.datetime(2020, 12, 15),
-                                                datetime.datetime(2022, 1, 25)]) 
+             fig = plot_mean(df,
+                             x = 'date',
+                             y = 'compound_mean', 
+                             y2 = 's5000_compound',                              
+                             upper = 'compound_upper',
+                             lower = 'compound_lower',
+                             line_name = 'Centered sentiment score',
+                             line2_name = 'Smoothed',
+                             title = 'Sentiment',
+                             xaxis_range = [datetime.datetime(2020, 12, 15),
+                                            datetime.datetime(2022, 1, 25)]) 
 
            else:
-             fig = plot_sentiment(df0, 
-                                  df1,
-                                  x = 'date',
-                                  y = 'compound_mean', 
-                                  y_smoothed = 's500_compound',                              
-                                  upper = 'compound_upper',
-                                  lower = 'compound_lower',
-                                  line_name = 'Centered sentiment score',
-                                  line_smoothed_name = 'Smoothed',
-                                  title = 'Sentiment',
-                                  xaxis_range = [datetime.datetime(2020, 12, 15),
-                                                datetime.datetime(2022, 1, 25)]) 
+             fig = plot_mean(df,
+                             x = 'date',
+                             y = 'compound_mean', 
+                             y2 = 's500_compound',                              
+                             upper = 'compound_upper',
+                             lower = 'compound_lower',
+                             line_name = 'Centered sentiment score',
+                             line2_name = 'Smoothed',
+                             title = 'Sentiment',
+                             xaxis_range = [datetime.datetime(2020, 12, 15),
+                                            datetime.datetime(2022, 1, 25)]) 
 
 
            st.plotly_chart(fig, use_container_width = True)
@@ -206,45 +222,42 @@ def main():
            st.subheader('Z polarity score')
 
            if menu == 'Omicron':
-                        fig1 = plot_sentiment(df0, 
-                                              df1,
-                                              x = 'date',
-                                              y = 'z_mean', 
-                                              y_smoothed = 's500_polarity_score_z', 
-                                              upper = 'z_upper',
-                                              lower = 'z_lower',
-                                              line_name = 'z(Polarity score)',
-                                              line_smoothed_name = 'Smoothed',
-                                              title = 'Sentiment',
-                                              xaxis_range = [datetime.datetime(2021, 11, 1),
-                                                             datetime.datetime(2022, 1, 31)]) 
+                        fig1 = plot_mean(df,
+                                         x = 'date',
+                                         y = 'z_mean', 
+                                         y2 = 's500_polarity_score_z', 
+                                         upper = 'z_upper',
+                                         lower = 'z_lower',
+                                         line_name = 'z(Polarity score)',
+                                         line2_name = 'Smoothed',
+                                         title = 'Sentiment',
+                                         xaxis_range = [datetime.datetime(2021, 11, 1),
+                                                        datetime.datetime(2022, 1, 31)]) 
            elif (menu == 'Vaccin') or (menu == 'Corona'):
-             fig1 = plot_sentiment(df0, 
-                                   df1,
-                                   x = 'date',
-                                   y = 'z_mean', 
-                                   y_smoothed = 's5000_polarity_score_z', 
-                                   upper = 'z_upper',
-                                   lower = 'z_lower',
-                                   line_name = 'z(Polarity score)',
-                                   line_smoothed_name = 'Smoothed',
-                                   title = 'Sentiment',
-                                   xaxis_range = [datetime.datetime(2020, 12, 15),
-                                                  datetime.datetime(2022, 1, 25)])
+             fig1 = plot_mean(df,
+                              x = 'date',
+                              y = 'z_mean', 
+                              y2= 's5000_polarity_score_z', 
+                              upper = 'z_upper',
+                              lower = 'z_lower',
+                              line_name = 'z(Polarity score)',
+                              line2_name = 'Smoothed',
+                              title = 'Sentiment',
+                              xaxis_range = [datetime.datetime(2020, 12, 15),
+                                             datetime.datetime(2022, 1, 25)])
 
            else:
-             fig1 = plot_sentiment(df0, 
-                                   df1,
-                                   x = 'date',
-                                   y = 'z_mean', 
-                                   y_smoothed = 's500_polarity_score_z', 
-                                   upper = 'z_upper',
-                                   lower = 'z_lower',
-                                   line_name = 'z(Polarity score)',
-                                   line_smoothed_name = 'Smoothed',
-                                   title = 'Sentiment',
-                                   xaxis_range = [datetime.datetime(2020, 12, 15),
-                                                  datetime.datetime(2022, 1, 25)]) 
+             fig1 = plot_mean(df,
+                              x = 'date',
+                              y = 'z_mean', 
+                              y2 = 's500_polarity_score_z', 
+                              upper = 'z_upper',
+                              lower = 'z_lower',
+                              line_name = 'z(Polarity score)',
+                              line2_name = 'Smoothed',
+                              title = 'Sentiment',
+                              xaxis_range = [datetime.datetime(2020, 12, 15),
+                                             datetime.datetime(2022, 1, 25)]) 
 
 
 
@@ -278,11 +291,14 @@ def main():
                        path = 'data/',
                        data_prefix = '_w_freq.pkl') 
 
-        df= df.sort_values('Frequency', ascending = True)
+      
 
-        fig = plot_bar_freq(data = df,
+        df0 = df.nlargest(30, columns=['Frequency'])
+        df0= df0.sort_values('Frequency', ascending = True)
+
+        fig = plot_bar_freq(data = df0,
                             x = 'Frequency',
-                            y_ = 'word',
+                            y = 'Word',
                             title = 'Most Frequent Words', 
                             colourscale = palette1)
 
@@ -293,13 +309,39 @@ def main():
       #   st.title('Bigrams')
 
          df = read_pkl(label = menu, 
-                        path = 'data/',
-                        data_prefix = '_bigrams.pkl') 
+                       path = 'data/',
+                       data_prefix = '_bigrams.pkl') 
 
-         plot = plot_bigrams(data = df,
-                             title = 'Bigrams')
+         w_freq = read_pkl(label = menu, 
+                           path = 'data/',                        
+                           data_prefix = '_w_freq.pkl') 
 
-         st.bokeh_chart(plot, use_container_width=True)
+         freq_dict = w_freq.to_dict(orient = 'split')['data']  #make dict of words and frequencies
+
+         
+         co_occurence = dict(df.values) #make dict of bigrams and co-occurence values
+
+         scaled_co_occurence = scale(co_occurence) #scale co_occurence values
+                            
+         value = st.slider( 'Select the number of bigrams', min_value = 1, max_value = 30,  value = 30, step = 1)
+        
+         dict_bigrams = df[:value].set_index('bigram').T.to_dict('records') #create a dict of bigrams 
+
+         k = 4
+
+         G = nx.Graph()
+
+         for key, value in dict_bigrams[0].items():    
+            G.add_edge(key[0], key[1], weight=(value * 5))
+
+         pos = nx.spring_layout(G, k=k)
+
+         freq = dict_freq(freq_dict, G, True) #create dict of words from bigrams and their frequency values
+
+         fig = plot_bigrams(G, freq, scaled_co_occurence, pos, color_palette_nodes, color_palette_edges, 'Bigrams')
+
+         st.bokeh_chart(fig, use_container_width = True)
+
 
     elif navigator == 'WordCloud':
        #  st.title('WordCloud')

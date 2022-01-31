@@ -100,7 +100,7 @@ def save_pkl(dataset: pd.DataFrame,
 
   
 
-df = read_pkl(str(sys.argv[1]), 'data/', '.pkl')
+df = read_pkl(str(sys.argv[1]), '../data/', '.pkl')
 
 # Create df with dates and sentiment scores
 df0 = df.filter(['date', 'centered_compound', 'polarity_score_z'], axis=1)
@@ -156,4 +156,4 @@ merged_z= pd.merge(df_z, mean_z, on = 'date')
 df_merged = pd.merge(merged_compound, merged_z, on = 'date')
 
 # Save df to pickle
-save_pkl(df_merged, str(sys.argv[1]), 'data/', '_sentiment.pkl')
+save_pkl(df_merged, str(sys.argv[1]), '../data/', '_sentiment.pkl')

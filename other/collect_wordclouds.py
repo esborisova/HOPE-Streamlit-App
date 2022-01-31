@@ -76,7 +76,7 @@ def plot_wordcloud(wordcloud,
 
 
 
-df = read_pkl(str(sys.argv[1]), 'data/', '.pkl')
+df = read_pkl(str(sys.argv[1]), '../data/', '.pkl')
 
 
 texts = df["tokens_string"]
@@ -95,7 +95,7 @@ wordcloud = WordCloud(width = 3000, height = 2000, random_state=1,
                       collocations=False, stopwords = stop_words).generate(texts)
 
 
-plot_wordcloud(wordcloud, str(sys.argv[1]), 'data/', '_wordcloud.png', save = True)
+plot_wordcloud(wordcloud, str(sys.argv[1]), '../data/', '_wordcloud.png', save = True)
 
 
 
