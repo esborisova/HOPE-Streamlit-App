@@ -50,7 +50,7 @@ def read_pkl(label: str,
 
 
 
-def plot_tweet_freq(data: pd.DataFrame,
+def plot_line_graph(data: pd.DataFrame,
                     x: str,
                     y: str,
                     y2: str,

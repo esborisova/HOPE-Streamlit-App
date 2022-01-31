@@ -134,7 +134,7 @@ def main():
 
         if menu == 'Omicron':
            
-          fig = plot_tweet_freq(data = df,
+          fig = plot_line_graph(data = df,
                                 x = 'date',
                                 y = 'nr_of_tweets',
                                 y2 = 's500_nr_of_tweets',
@@ -145,7 +145,7 @@ def main():
                                                datetime.datetime(2022, 1, 31)])
 
         elif (menu == 'Vaccin') or (menu == 'Corona'):
-          fig = plot_tweet_freq(data = df,
+          fig = plot_line_graph(data = df,
                                 x = 'date',
                                 y = 'nr_of_tweets',
                                 y2 = 's5000_nr_of_tweets',
@@ -156,7 +156,7 @@ def main():
                                                datetime.datetime(2022, 1, 31)])
 
         else:  
-          fig = plot_tweet_freq(data = df,
+          fig = plot_line_graph(data = df,
                                 x = 'date',
                                 y = 'nr_of_tweets',
                                 y2 = 's500_nr_of_tweets',
