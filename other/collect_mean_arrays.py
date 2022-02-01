@@ -155,5 +155,9 @@ merged_z= pd.merge(df_z, mean_z, on = 'date')
 # Create df with all values for z and compound scores 
 df_merged = pd.merge(merged_compound, merged_z, on = 'date')
 
+merged_final = pd.merge(df, df_merged, on = 'date')
+
+merged_final = merged_final.drop_duplicates(subset=['date'])
+
 # Save df to pickle
-save_pkl(df_merged, str(sys.argv[1]), '../data/', '_sentiment.pkl')
+save_pkl(merged_final, str(sys.argv[1]), '../data/', '_sentiment.pkl')

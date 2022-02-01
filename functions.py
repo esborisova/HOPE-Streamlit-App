@@ -24,7 +24,7 @@ def read_pkl(label: str,
              path: str,
              data_prefix: str) -> pd.DataFrame:
 
-    """Reads pickle file
+    """Reads a pickle file
     
     
     Args:
@@ -50,30 +50,27 @@ def read_pkl(label: str,
 
 
 
-def plot_line_graph(data: pd.DataFrame,
-                    x: str,
-                    y: str,
-                    y2: str,
-                    line_name: str,
-                    line2_name: str, 
-                    title: str, 
-                    xaxis_range: list):
+def plot_line(x: str,
+              y: str,
+              y2: str,
+              line_name: str,
+              line2_name: str, 
+              title: str, 
+              xaxis_range: list):
 
     """Plots the line graph with two lines. It depics the distribution of two Y values across the same X values.
     
     
     Args:
-        data (pd.DataFrame): The pandas dataframe with x and y values
+        x (str): X values 
 
-        x (str): The dataframe column with x values 
+        y (str): The first Y values 
 
-        y (str): The dataframe column with first y values 
+        y2 (str): The second Y values 
 
-        y2 (str): The dataframe column with second y values 
+        line_name (str): The name of the line showing the distribution of the first Y values
 
-        line_name (str): The name of the line showing the distribution of the first y values
-
-        line_smoothed_name (str): The name of the line showing the distribution of the second y values
+        line2_name (str): The name of the line showing the distribution of the second Y values
 
         title: The title of the line plot
        
@@ -84,16 +81,16 @@ def plot_line_graph(data: pd.DataFrame,
           fig: The line plot
     """
 
-    fig = go.Figure(data = go.Scatter(x = data[x].astype(dtype=str), 
-                                      y = data[y],
+    fig = go.Figure(data = go.Scatter(x = x.astype(dtype=str), 
+                                      y = y,
                                       name = line_name,
                                       mode = 'lines',
-                                      line = dict(color = 'black', width = 4)))
+                                      line = dict(color = 'black', width = 5)))
         
-    fig.add_trace(go.Scatter(x = data[x].astype(dtype=str),
-                             y = data[y2],
+    fig.add_trace(go.Scatter(x = x.astype(dtype=str),
+                             y = y2,
                              mode = 'lines',
-                             line = dict(color = 'rgb(49,130,189)', width = 4.5),
+                             line = dict(color = 'rgb(49,130,189)', width = 5),
                              name = line2_name))      
 
     fig.update_layout(height = 600, 
@@ -118,33 +115,33 @@ def plot_line_graph(data: pd.DataFrame,
 
 
 
-
-def plot_mean(data: pd.DataFrame, 
-              x: str, 
+def plot_mean(x: str, 
               y: str, 
               y2: str,  
-              upper: str, 
-              lower: str,
+              upper_bound: str, 
+              lower_bound: str,
               line_name: str, 
               line2_name: str, 
               title: str,
               xaxis_range: str):
 
-    """Plots the line graph with two lines. It depics the distribution of two mean Y values across the same X values. It also shows the 95% confidence interval. 
+    """Plots the line graph with two lines. It depics the distribution of two mean Y values across the same X values. It also shows the confidence interval. 
     
     
     Args:
-        data (pd.DataFrame): The pandas dataframe with x and y values
+        x (str): X values 
 
-        x (str): The dataframe column with x values 
+        y (str): The first mean Y values 
 
-        y (str): The dataframe column with the first mean y values 
+        y2 (str): The second mean Y values
 
-        y2 (str): The dataframe column with the secind mean y values
+        upper_bound (str): The values for the upper bound of the confidence interval
 
-        line_name (str): The name of the line showing the distribution of the first y values
+        lower_bound (str): The values for the lower bound of the confidence interval
 
-        line_smoothed_name (str): The name of the line showing the distribution of the second y values
+        line_name (str): The name of the line showing the distribution of the first Y values
+
+        line2_name (str): The name of the line showing the distribution of the second Y values
 
         title: The title of the line plot
        
@@ -157,24 +154,24 @@ def plot_mean(data: pd.DataFrame,
     
     fig = go.Figure()   
 
-    fig.add_trace(go.Scatter(x = data[x],
-                             y = data[y],
+    fig.add_trace(go.Scatter(x = x,
+                             y = y,
                              name = line_name,
                              line = dict(color = 'black', width = 4)))
                        
-    fig.add_trace(go.Scatter(name='Upper Bound',
-                             x = data[x],
-                             y = data[upper],
+    fig.add_trace(go.Scatter(name = 'Upper Bound',
+                             x = x,
+                             y = upper_bound,
                              mode = 'lines',
                              marker = dict(color="#444"),
                              fillcolor = 'rgba(68, 68, 68, 0.3)',
                              fill = 'tonexty',
-                             line = dict(width=0),
+                             line = dict(width = 0),
                              showlegend = False))
 
     fig.add_trace(go.Scatter(name = 'Lower Bound',
-                             x = data[x],
-                             y = data[lower],
+                             x = x,
+                             y = lower_bound,
                              marker = dict(color="#444"),
                              line = dict(width=0),
                              mode = 'lines',
@@ -182,8 +179,8 @@ def plot_mean(data: pd.DataFrame,
                              fill = 'tonexty',
                              showlegend = False))
 
-    fig.add_trace(go.Scatter(x = data[x],
-                             y = data[y2],
+    fig.add_trace(go.Scatter(x = x,
+                             y = y2,
                              mode = 'lines',
                              line = dict(color = 'orange', width = 4.5),
                              name = line2_name))
@@ -216,21 +213,18 @@ def plot_mean(data: pd.DataFrame,
 
 
 
-def plot_bar_freq(data: pd.DataFrame,
-                  x: str,
-                  y: str,
-                  title: str, 
-                  colourscale: list):
+def plot_bar(x: str,
+             y: str,
+             title: str, 
+             colourscale: list):
 
-    """Plots the bar chart showing frequency of words/hashtags across the dataset
+    """Plots the bar chart 
     
     
     Args:
-        data (pd.DataFrame): The pandas dataframe with data
+        x (str): The X values 
 
-        x (str): The dataframe column with x values (frequency)
-
-        y (str): The dataframe column with y values (words/hashtags)
+        y (str): The Y values 
 
         title: The title of the bar chart
        
@@ -241,10 +235,10 @@ def plot_bar_freq(data: pd.DataFrame,
           fig: The bar chart
     """
     
-    fig = go.FigureWidget(data=[go.Bar(x = data[x], 
-                                       y = data[y], 
+    fig = go.FigureWidget(data=[go.Bar(x = x, 
+                                       y = y, 
                                        orientation='h', 
-                                       marker = dict(color = data[x], colorscale = colourscale))])
+                                       marker = dict(color = x, colorscale = colourscale))])
 
     fig.update_layout(title_text = title, 
                       title_font_size = 50,
@@ -258,30 +252,10 @@ def plot_bar_freq(data: pd.DataFrame,
 
 
 
-
-
-def word_freq(data: pd.DataFrame) -> pd.DataFrame:
-    """Calculates word frequency
-    
-    Args:
-        data (pd.DataFrame): The pandas dataframe with data
-  
-    
-    Returns:
-          w_freq (pd.DataFrame): The dataframe with words and their frequency values
-    """
-    
-    w_freq = data.tokens_string.str.split(expand = True).stack().value_counts()
-    w_freq = w_freq.to_frame().reset_index().rename(columns={'index': 'word', 0: 'Frequency'})
-
-    return w_freq
-
-
-
-def dict_freq(freq:dict,
-              G,
-              scale: bool) -> dict:
-    """Creates a dictionary of words (present in bigrams) and their frequencies. 
+def bigram_freq(freq:dict,
+                G,
+                scale: bool) -> dict:
+    """Creates a dictionary of words (present in bigrams) and their frequencies
     
     Args:
         freq (dict): A dictionary with all words from the data corpus and their frequency values  
@@ -308,7 +282,7 @@ def dict_freq(freq:dict,
 
 
 def scale(data: dict) -> dict:
-    """Calculates logarithm base 2 and multiplies the result by 3.
+    """Calculates logarithm base 2 and multiplies the result by 3
     
     Args:
         data (dict): A ditctionary with values
@@ -333,7 +307,30 @@ def plot_bigrams(G,
                  palette_edges: list,  
                  title: str):
 
+    """Plots node graph
+    
+    Args:
+        G: A Networkx graph
+
+        word_freq (dict):  A dictionary of bigram members and their frequencies across the dataset
+
+        co_occurence (dict): A dictionaty of bigrams and their co-occurence values
+
+        pos (dict): A dictionary of positions keyed by node  
+        
+        palette_nodes (list): A colour palette for the nodes 
+        
+        palette_edges (list):  A colour palette for the edges
+                 
+        title (str): The title of the node graph
+
+    Returns:
+          plot: The node graph
+    
+    """    
+
     from bokeh.plotting import figure
+    
 
     nx.set_node_attributes(G, name = 'freq', values = word_freq)
     nx.set_edge_attributes(G, name = 'co_occurence', values = co_occurence)
@@ -396,7 +393,6 @@ def plot_bigrams(G,
        
     plot.renderers.append(network_graph)
     
-     
     x, y = zip(*network_graph.layout_provider.graph_layout.values())
     node_labels = list(G.nodes())
     source = ColumnDataSource({'x': x, 'y': y, 'name': [node_labels[i] for i in range(len(x))]})
