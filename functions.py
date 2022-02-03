@@ -1,6 +1,7 @@
 from _plotly_utils.utils import find_closest_string
 import streamlit as st
 import math
+import datetime
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
@@ -17,6 +18,7 @@ from bokeh.plotting import from_networkx
 
 from bokeh.palettes import Blues8, Reds8, Purples8, Oranges8, Viridis8, Spectral8
 from bokeh.transform import linear_cmap
+
 
 
 
@@ -97,7 +99,7 @@ def plot_line(x: str,
                       width = 700, 
                       title = title,
                       title_font_size = 50,
-                      title_font = dict(color = 'black'),
+                      title_font = dict(color = 'grey'),
                       title_x = 0.5, 
                       title_y = 0.98,
                       showlegend = True,
@@ -189,7 +191,7 @@ def plot_mean(x: str,
                       width = 800, 
                       title = title,
                       title_font_size = 50,
-                      title_font = dict(color = 'black'),
+                      title_font = dict(color = 'grey'),
                       title_x = 0.5, 
                       title_y = 0.98,
                       showlegend = True,
@@ -348,8 +350,7 @@ def plot_bigrams(G,
 
     plot.title.text_font_size = '20px'
 
-   # HOVER_TOOLTIPS = [("Frequency", "@freq")]
-    plot.add_tools(HoverTool(tooltips=None), TapTool(), BoxSelectTool())
+    plot.add_tools(HoverTool(tooltips = None), TapTool(), BoxSelectTool())
    
     network_graph = from_networkx(G, pos, scale = 10, center = (0, 0))
 
@@ -407,4 +408,125 @@ def plot_bigrams(G,
     plot.renderers.append(labels)
 
     return plot
+
+
+def smoothing(label: str) -> int:
+    """Defines the smoothing value depending on the dataset
+
+    Args:
+       label (str): The name of the dataset (from the menu)
+
+    Returns: 
+          smoothing_value (int): The smoothing value 
+    """
+
+    smoothing_value = 0
+
+    if (label == 'Vaccin') or (label == 'Corona'):
+        smoothing_value = 5000
+    else:
+        smoothing_value = 500
+        
+    return smoothing_value
+
+
+
+def set_lab_freq(label: str):
+    """Defines the name of the dataframe column with smoothed tweet frequency values and the (date) range of X axis
+
+    Args:
+       label (str): The name of the dataset (from the menu)
+    
+    Returns:
+          y2_name (str): The name of the dataframe column with smoothed Y values
+
+          xaxis_range: The range of X axis  
+    """
+
+    y2_name = None
+    xaxis_range = None
+
+    if label == 'Omicron':
+        y2_name = 's500_nr_of_tweets'
+        xaxis_range = [datetime.datetime(2021, 11, 1),
+                       datetime.datetime(2022, 1, 31)]
+
+    elif (label == 'Vaccin') or (label == 'Corona'):
+        y2_name = 's5000_nr_of_tweets'
+        xaxis_range = [datetime.datetime(2020, 11, 1),
+                       datetime.datetime(2022, 1, 31)]
+        
+    else:
+        y2_name = 's500_nr_of_tweets'
+        xaxis_range = [datetime.datetime(2020, 11, 1),
+                       datetime.datetime(2022, 1, 31)]
+
+    return y2_name, xaxis_range
+
+
+
+def set_lab_vader(label):
+    """Defines the name of the dataframe column with smoothed vader sentiment scores and the (date) range of X axis
+
+    Args:
+       label (str): The name of the dataset (from the menu)
+    
+    Returns:
+          y2_name (str): The name of the dataframe column with smoothed Y values
+
+          xaxis_range: The range of X axis  
+    """
+
+    y2_name = None
+    xaxis_range = None
+
+    if label == 'Omicron':
+        y2_name = 's500_compound'
+        xaxis_range = [datetime.datetime(2021, 11, 1),
+                       datetime.datetime(2022, 1, 31)]
+
+    elif (label == 'Vaccin') or (label == 'Corona'):
+        y2_name = 's5000_compound'
+        xaxis_range = [datetime.datetime(2020, 12, 15),
+                       datetime.datetime(2022, 1, 25)]
+        
+    else:
+        y2_name = 's500_compound'
+        xaxis_range = [datetime.datetime(2020, 12, 15),
+                       datetime.datetime(2022, 1, 25)]
+    return y2_name, xaxis_range
+
+
+
+def set_lab_bert(label):
+    """Defines the name of the dataframe column with smoothed bert sentiment scores and the (date) range of X axis
+
+    Args:
+       label (str): The name of the dataset (from the menu)
+    
+    Returns:
+          y2_name (str): The name of the dataframe column with smoothed Y values
+
+          xaxis_range: The range of X axis  
+    """
+
+    y2_name = None
+    xaxis_range = None
+
+    if label == 'Omicron':
+        y2_name = 's500_polarity_score_z'
+        xaxis_range = [datetime.datetime(2021, 11, 1),
+                       datetime.datetime(2022, 1, 31)]
+
+    elif (label == 'Vaccin') or (label == 'Corona'):
+        y2_name = 's5000_polarity_score_z'
+        xaxis_range = [datetime.datetime(2020, 12, 15),
+                       datetime.datetime(2022, 1, 25)]
+        
+    else:
+        y2_name = 's500_polarity_score_z'
+        xaxis_range = [datetime.datetime(2020, 12, 15),
+                       datetime.datetime(2022, 1, 25)]
+
+    return y2_name, xaxis_range
 
