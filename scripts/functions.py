@@ -1,4 +1,3 @@
-from _plotly_utils.utils import find_closest_string
 import streamlit as st
 import math
 import datetime
@@ -15,8 +14,6 @@ from bokeh.models import (BoxSelectTool, Circle, EdgesAndLinkedNodes, HoverTool,
                           MultiLine, NodesAndLinkedEdges, Range1d, TapTool,
                           Range1d, ColumnDataSource, LabelSet)
 from bokeh.plotting import from_networkx
-
-from bokeh.palettes import Blues8, Reds8, Purples8, Oranges8, Viridis8, Spectral8
 from bokeh.transform import linear_cmap
 
 
