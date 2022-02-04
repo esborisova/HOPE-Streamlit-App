@@ -132,7 +132,7 @@ def main():
 
   if navigator == 'Tweet Frequency':
     df = read_pkl(label = menu, 
-                  path = 'data/', 
+                  path = '../data/', 
                   data_prefix = '_tweet_freq.pkl')  
    
     y2_name, xaxis_range = set_lab_freq(menu)
@@ -169,7 +169,7 @@ def main():
   elif navigator == 'Sentiment':  
     
     df = read_pkl(label = menu, 
-                  path = 'data/',
+                  path = '../data/',
                   data_prefix = '_sentiment.pkl') 
     
     y2_name, xaxis_range = set_lab_vader(menu)
@@ -248,7 +248,7 @@ def main():
   elif navigator == 'Hashtag Frequency':
 
     df = read_pkl(label = menu, 
-                  path = 'data/',
+                  path = '../data/',
                   data_prefix = '_hash.pkl') 
 
     df = df.sort_values('nr_of_hashtags', ascending = True)
@@ -271,7 +271,7 @@ def main():
 
   elif navigator == 'Word Frequency':
     df = read_pkl(label = menu, 
-                  path = 'data/',
+                  path = '../data/',
                   data_prefix = '_w_freq.pkl') 
 
     df0 = df.nlargest(30, columns=['Frequency'])
@@ -298,11 +298,11 @@ def main():
   elif navigator == 'Bigrams':
 
     df = read_pkl(label = menu, 
-                  path = 'data/',
+                  path = '../data/',
                   data_prefix = '_bigrams.pkl') 
 
     w_freq = read_pkl(label = menu, 
-                      path = 'data/',                        
+                      path = '../data/',                        
                       data_prefix = '_w_freq.pkl') 
 
     value = st.slider('Select the number of bigrams', min_value = 1, max_value = 30,  value = 30, step = 1)
@@ -350,7 +350,7 @@ def main():
   elif navigator == 'WordCloud':
     label = menu.lower()
     filename = label + '_wordcloud.png'
-    path = 'data/' +  label + '/' + filename
+    path = '../data/' +  label + '/' + filename
       
   
     st.image(path)
