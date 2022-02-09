@@ -32,7 +32,7 @@ st.set_page_config(page_title = 'HOPE Twitter Analytics', layout = 'centered')
 st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
 
 st.markdown("""
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #3498DB;">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: #87CEEB;">
   <a class="navbar-brand" href="https://hope-project.dk/#/" target="_blank">HOPE Project</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -101,6 +101,22 @@ color_palette_nodes = ['#E0FFFF',  '#bcdfeb', '#62b4cf', '#1E90FF']
 color_palette_edges = ['#8fbc8f', '#3cb371', '#2e8b57', '#006400']
 
 
+#######################################
+# Define the dictionary with keywords #
+######################################
+
+keywords = dict({'Restriktion': 'restriktion', 
+                 'Genåb': 'genåb', 
+                 'Corona': 'covid, corona', 
+                 'Coronapas': 'coronapas',
+                 'Lockdown': 'nedluk, lock-down, lockdown',
+                 'Mettef': 'mettef, mette f, statsminister, statminister, statminist',
+                 'Mundbind': 'mundbind',
+                 'Omicron': 'b.1.1.529, variant, mutation, b11529, omicron, sydafrikanske variant',
+                 'Pressekonference': 'pressekonference, pressemøde',
+                 'Vaccin': 'vaccin'})
+
+
 ######################
 # Pipeline for plots #
 ######################
@@ -131,11 +147,11 @@ def main():
                   path = '../data/', 
                   data_prefix = '_tweet_freq.pkl')  
    
-    y2_name, xaxis_range = set_lab_freq(menu)
+    xaxis_range = set_range_freq(menu)
     
     fig = plot_line(x = df['date'],
                     y = df['nr_of_tweets'],
-                    y2 = df[y2_name],
+                    y2 = df['mean'],
                     line_name = 'Number of tweets',
                     line2_name = 'Smoothed values',
                     title = 'Frequency of Mentions', 
@@ -160,6 +176,11 @@ def main():
                str(smoothing_value), 
                """.""",
                """Dates start at January 1st 2021.""")
+
+    keywords_list = choose_keywords(menu, keywords)
+
+    with st.expander('Searched keywords'): 
+      st.write(keywords_list)
 
 
   elif navigator == 'Sentiment':  
@@ -327,7 +348,7 @@ def main():
     st.bokeh_chart(fig, use_container_width = True)
 
     with st.expander('Caption (DA)'): 
-      st.write("""De 30 hyppigste ordpar i tweets der indeholder søgeordene. 
+      st.write("""De 30 hyppigste ordpar (bigrams) i tweets der indeholder søgeordene. 
                Hver boble repræsenterer et ord. Streger mellem boblerne (ord) repræsenterer forbindelser mellem ordene. 
                Boblens blå nuance indikerer hvor ofte ordet optræder i tweetsne, og den grønne nuance af stregerne indikerer hvor ofte ordparret optræder. 
                Jo mørkere farven er, jo hyppigere er ordet eller ordparret.
@@ -335,7 +356,7 @@ def main():
                """) 
 
     with st.expander('Caption (EN)'): 
-         st.write("""The 30 most common word-pairs in the tweets containing the keywords. 
+         st.write("""The 30 most common word-pairs (bigrams) in the tweets containing the keywords. 
                   Each node constitutes a word. Connections between nodes (words) are represented through edges.
                   The shades of blue colour of the nodes indicate frequency of the word in the tweets, while the shades of green colour of the edges indicate frequency of bigram co-occurence. 
                   The darker the color, the more frequent the word or bigram. 

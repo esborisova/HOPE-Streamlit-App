@@ -84,12 +84,12 @@ def plot_line(x: str,
                                       y = y,
                                       name = line_name,
                                       mode = 'lines',
-                                      line = dict(color = 'black', width = 5)))
+                                      line = dict(color = 'black', width = 6)))
         
     fig.add_trace(go.Scatter(x = x.astype(dtype=str),
                              y = y2,
                              mode = 'lines',
-                             line = dict(color = 'rgb(49,130,189)', width = 5),
+                             line = dict(color = 'rgb(49,130,189)', width = 6, shape = 'spline'),
                              name = line2_name))      
 
     fig.update_layout(height = 600, 
@@ -239,7 +239,9 @@ def plot_bar(x: str,
                                        orientation='h', 
                                        marker = dict(color = x, colorscale = colourscale))])
 
-    fig.update_layout(title_text = title, 
+    fig.update_layout(height = 600, 
+                      width = 700,
+                      title_text = title, 
                       title_font_size = 50,
                       title_font = dict(color='grey'),
                       title_x = 0.5, 
@@ -428,37 +430,31 @@ def smoothing(label: str) -> int:
 
 
 
-def set_lab_freq(label: str):
-    """Defines the name of the dataframe column with smoothed tweet frequency values and the (date) range of X axis
+def set_range_freq(label: str):
+    """Defines the (date) range of X axis for tweet frequency graph
 
     Args:
        label (str): The name of the dataset (from the menu)
     
     Returns:
-          y2_name (str): The name of the dataframe column with smoothed Y values
-
           xaxis_range: The range of X axis  
     """
 
-    y2_name = None
     xaxis_range = None
 
     if label == 'Omicron':
-        y2_name = 's500_nr_of_tweets'
         xaxis_range = [datetime.datetime(2021, 11, 1),
                        datetime.datetime(2022, 1, 31)]
 
     elif (label == 'Vaccin') or (label == 'Corona'):
-        y2_name = 's5000_nr_of_tweets'
         xaxis_range = [datetime.datetime(2020, 11, 1),
                        datetime.datetime(2022, 1, 31)]
         
     else:
-        y2_name = 's500_nr_of_tweets'
         xaxis_range = [datetime.datetime(2020, 11, 1),
                        datetime.datetime(2022, 1, 31)]
 
-    return y2_name, xaxis_range
+    return xaxis_range
 
 
 
@@ -526,4 +522,21 @@ def set_lab_bert(label):
                        datetime.datetime(2022, 1, 25)]
 
     return y2_name, xaxis_range
+
+
+
+def choose_keywords(label: str, keywords_dict: dict):
+    """Returns the relevant list of keywords
+
+    Args:
+       label (str): The name of the dataset (from the menu)
+
+       keywords_dict (dict): The dictionary with keywords per dataset
+    
+    Returns:
+          dictionary[i]: The list of keywords 
+    """
+    for i in keywords_dict:
+        if i == label:
+            return keywords_dict[i]
 
