@@ -1,6 +1,6 @@
 # HOPE Twitter Analytics
 
-The code for creating the Streamlit App for the HOPE project. It contains various visual representations of the lingustic analasis of Danish Twitter data.   
+The code for creating the Streamlit App for the HOPE project. It contains various visual representations of the linguistic analysis of Danish Twitter data.   
 
 ## :woman_technologist: Usage
 
