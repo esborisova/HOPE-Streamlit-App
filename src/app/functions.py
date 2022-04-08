@@ -25,23 +25,23 @@ from bokeh.models import (
 )
 from bokeh.plotting import from_networkx
 from bokeh.transform import linear_cmap
+from typing import List, Dict, Tuple
 
 
 def read_pkl(label: str, path: str, data_prefix: str) -> pd.DataFrame:
 
-    """Reads a pickle file
-    
-    
+    """
+    Reads a pickle file.
+
     Args:
-        label (str): The name of the selectbox (f.ex., Restriktion, Omicron, etc.)
+        label (str): The name of the selectbox (f.ex., Restriktion, Omicron, etc.).
 
-        path (str): The path to the folder with files 
+        path (str): The path to the folder with files.
 
-        data_prefix (str): The file name prefix (f.ex., restriktion_hash.pkl: Label — restriktion, prefix — _hash.pkl)
-    
-    
+        data_prefix (str): The file name prefix (f.ex., restriktion_hash.pkl: Label — restriktion, prefix — _hash.pkl).
+
     Returns:
-          pd.DataFrame: The pandas dataframe with data
+        pd.DataFrame: The pandas dataframe with data.
     """
 
     label = label.lower()
@@ -64,27 +64,27 @@ def plot_line(
     xaxis_range: list,
 ):
 
-    """Plots the line graph with two lines. It depics the distribution of two Y values across the same X values.
-    
-    
+    """
+    Plots the line graph with two lines.
+    It depicts the distribution of two Y values across the same X values.
+
     Args:
-        x (str): X values 
+        x (str): X values.
 
-        y (str): The first Y values 
+        y (str): The first Y values.
 
-        y2 (str): The second Y values 
+        y2 (str): The second Y values.
 
-        line_name (str): The name of the line showing the distribution of the first Y values
+        line_name (str): The name of the line showing the distribution of the first Y values.
 
-        line2_name (str): The name of the line showing the distribution of the second Y values
+        line2_name (str): The name of the line showing the distribution of the second Y values.
 
-        title: The title of the line plot
-       
-        xaxis_range: The range of X axis 
-    
-    
+        title: The title of the line plot.
+
+        list: The range of X axis.
+
     Returns:
-          fig: The line plot
+        fig: The line plot
     """
 
     fig = go.Figure(
@@ -136,34 +136,34 @@ def plot_mean(
     line_name: str,
     line2_name: str,
     title: str,
-    xaxis_range: str,
+    xaxis_range: list,
 ):
 
-    """Plots the line graph with two lines. It depics the distribution of two mean Y values across the same X values. It also shows the confidence interval. 
-    
-    
+    """
+    Plots the line graph with two lines.
+    It depicts the distribution of two mean Y values across the same X values. It also shows the confidence interval.
+
     Args:
-        x (str): X values 
+        x (str): X values.
 
-        y (str): The first mean Y values 
+        y (str): The first mean Y values.
 
-        y2 (str): The second mean Y values
+        y2 (str): The second mean Y values.
 
-        upper_bound (str): The values for the upper bound of the confidence interval
+        upper_bound (str): The values for the upper bound of the confidence interval.
 
-        lower_bound (str): The values for the lower bound of the confidence interval
+        lower_bound (str): The values for the lower bound of the confidence interval.
 
-        line_name (str): The name of the line showing the distribution of the first Y values
+        line_name (str): The name of the line showing the distribution of the first Y values.
 
-        line2_name (str): The name of the line showing the distribution of the second Y values
+        line2_name (str): The name of the line showing the distribution of the second Y values.
 
-        title: The title of the line plot
-       
-        xaxis_range: The range of X axis 
-    
-    
+        title: The title of the line plot.
+
+        list: The range of X axis.
+
     Returns:
-          fig: The line plot
+        fig: The line plot.
     """
 
     fig = go.Figure()
@@ -234,23 +234,22 @@ def plot_mean(
     return fig
 
 
-def plot_bar(x: str, y: str, title: str, colourscale: list):
+def plot_bar(x: str, y: str, title: str, colourscale: List[str]):
 
-    """Plots the bar chart 
-    
-    
+    """
+    Plots the bar chart.
+
     Args:
-        x (str): The X values 
+        x (str): The X values.
 
-        y (str): The Y values 
+        y (str): The Y values.
 
-        title: The title of the bar chart
-       
-        colourscale: The colour palette for the bars
-    
-    
+        title: The title of the bar chart.
+
+        List[str]: The colour palette for the bars.
+
     Returns:
-          fig: The bar chart
+        fig: The bar chart.
     """
 
     fig = go.FigureWidget(
@@ -276,18 +275,19 @@ def plot_bar(x: str, y: str, title: str, colourscale: list):
     return fig
 
 
-def bigram_freq(freq: dict, G, scale: bool) -> dict:
-    """Creates a dictionary of words (present in bigrams) and their frequencies
-    
+def bigram_freq(freq: Dict[str, int], G, scale: bool) -> Dict[str, int]:
+    """
+    Creates a dictionary of words (present in bigrams) and their frequencies.
+
     Args:
-        freq (dict): A dictionary with all words from the data corpus and their frequency values  
+        freq (Dict[str, int]): A dictionary with all words from the data corpus and their frequency values.
 
-        G: A Networkx graph
+        G: A Networkx graph.
 
-        scale: A boolean value. If true, the logarithm of frequency values will be calculated  
-    
+        scale: A boolean value. If true, the logarithm of frequency values will be calculated.
+
     Returns:
-          freq_dict (dict): The dictionary containg words from bigrams and their frequencies
+        Dict[str, int]: The dictionary containg words from bigrams and their frequencies.
     """
 
     freq_dict = {}
@@ -302,15 +302,16 @@ def bigram_freq(freq: dict, G, scale: bool) -> dict:
     return freq_dict
 
 
-def scale(data: dict) -> dict:
-    """Calculates logarithm base 2 and multiplies the result by 3
-    
+def scale(data: Dict[int]) -> Dict[int]:
+    """
+    Calculates logarithm base 2 and multiplies the result by 3.
+
     Args:
-        data (dict): A ditctionary with values
+        data (Dict[int]): A ditctionary with values.
 
     Returns:
-          data (dict): The input dictonary with updated values
-    
+        Dict[int]: The input dictonary with updated values.
+
     """
 
     for key, value in data.items():
@@ -321,34 +322,35 @@ def scale(data: dict) -> dict:
 
 def plot_bigrams(
     G,
-    word_freq: dict,
-    co_occurence: dict,
-    pos,
-    palette_nodes: list,
-    palette_edges: list,
+    word_freq: Dict[str, int],
+    co_occurence: Dict[str, int],
+    pos: Dict[int],
+    palette_nodes: List[str],
+    palette_edges: List[str],
     title: str,
 ):
 
-    """Plots node graph
-    
+    """
+    Plots node graph.
+
     Args:
-        G: A Networkx graph
+        G: A Networkx graph.
 
-        word_freq (dict):  A dictionary of bigram members and their frequencies across the dataset
+        word_freq (Dict[str, int]):  A dictionary of bigram members and their frequencies across the dataset.
 
-        co_occurence (dict): A dictionaty of bigrams and their co-occurence values
+        co_occurence (Dict[str, int]): A dictionaty of bigrams and their co-occurence values.
 
-        pos (dict): A dictionary of positions keyed by node  
-        
-        palette_nodes (list): A colour palette for the nodes 
-        
-        palette_edges (list):  A colour palette for the edges
-                 
-        title (str): The title of the node graph
+        pos (Dict[int]): A dictionary of positions keyed by node.
+
+        palette_nodes (List[str]): A colour palette for the nodes.
+
+        palette_edges (List[str]):  A colour palette for the edges.
+
+        title (str): The title of the node graph.
 
     Returns:
-          plot: The node graph
-    
+        plot: The node graph.
+
     """
 
     from bokeh.plotting import figure
@@ -435,13 +437,14 @@ def plot_bigrams(
 
 
 def smoothing(label: str) -> int:
-    """Defines the smoothing value depending on the dataset
+    """
+    Defines the smoothing value depending on the dataset.
 
     Args:
-       label (str): The name of the dataset (from the menu)
+       label (str): The name of the dataset (from the menu).
 
-    Returns: 
-          smoothing_value (int): The smoothing value 
+    Returns:
+        int: The smoothing value.
     """
 
     smoothing_value = 0
@@ -454,14 +457,15 @@ def smoothing(label: str) -> int:
     return smoothing_value
 
 
-def set_range_freq(label: str):
-    """Defines the (date) range of X axis for tweet frequency graph
+def set_range_freq(label: str) -> List[str]:
+    """
+    Defines the (date) range of X axis for tweet frequency graph.
 
     Args:
-       label (str): The name of the dataset (from the menu)
-    
+       label (str): The name of the dataset (from the menu).
+
     Returns:
-          xaxis_range: The range of X axis  
+       List[str]: The range of X axis.
     """
 
     xaxis_range = None
@@ -478,16 +482,17 @@ def set_range_freq(label: str):
     return xaxis_range
 
 
-def set_lab_vader(label):
-    """Defines the name of the dataframe column with smoothed vader sentiment scores and the (date) range of X axis
+def set_lab_vader(label: str) -> Tuple[List[str], str]:
+    """
+    Defines the name of the dataframe column with smoothed vader sentiment scores and the (date) range of X axis.
 
     Args:
-       label (str): The name of the dataset (from the menu)
-    
-    Returns:
-          y2_name (str): The name of the dataframe column with smoothed Y values
+       label (str): The name of the dataset (from the menu).
 
-          xaxis_range: The range of X axis  
+    Returns:
+        y2_name (str): The name of the dataframe column with smoothed Y values.
+
+        Tuple[List[str], str]: The range of X axis and the label for Y values.
     """
 
     y2_name = None
@@ -507,16 +512,17 @@ def set_lab_vader(label):
     return y2_name, xaxis_range
 
 
-def set_lab_bert(label):
-    """Defines the name of the dataframe column with smoothed bert sentiment scores and the (date) range of X axis
+def set_lab_bert(label: str) -> Tuple[List[str], str]:
+    """
+    Defines the name of the dataframe column with smoothed bert sentiment scores and the (date) range of X axis.
 
     Args:
-       label (str): The name of the dataset (from the menu)
-    
-    Returns:
-          y2_name (str): The name of the dataframe column with smoothed Y values
+       label (str): The name of the dataset (from the menu).
 
-          xaxis_range: The range of X axis  
+    Returns:
+        y2_name (str): The name of the dataframe column with smoothed Y values.
+
+        Tuple[List[str], str]: The range of X axis and the label for Y values.
     """
 
     y2_name = None
@@ -537,16 +543,17 @@ def set_lab_bert(label):
     return y2_name, xaxis_range
 
 
-def choose_keywords(label: str, keywords_dict: dict):
-    """Returns the relevant list of keywords
+def choose_keywords(label: str, keywords_dict: Dict[str]) -> List[str]:
+    """
+    Returns the relevant list of keywords.
 
     Args:
-       label (str): The name of the dataset (from the menu)
+       label (str): The name of the dataset (from the menu).
 
-       keywords_dict (dict): The dictionary with keywords per dataset
-    
+       keywords_dict (Dict[str]): The dictionary with keywords per dataset.
+
     Returns:
-          dictionary[i]: The list of keywords 
+        List[str]: The list of keywords.
     """
     for i in keywords_dict:
         if i == label:
