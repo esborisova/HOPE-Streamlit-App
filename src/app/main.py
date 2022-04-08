@@ -99,12 +99,12 @@ st.markdown(
 ##################################
 
 # Inferno
-palette0 = [
-    [0, "#F0E442"],  # yellow
+palette0 = [ 
+    [0, "#F0E442"],     # yellow
     [0.01, "#d62728"],  # brick red
     [0.03, "#800080"],  # purple
-    [1.0, "#000000"],
-]  # black
+    [1.0, "#000000"],   # black
+]  
 
 # Blues
 palette1 = [
