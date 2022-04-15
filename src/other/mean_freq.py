@@ -1,4 +1,4 @@
-"""A pipeline for collecting mean frequency values"""
+"""Pipeline for collecting mean frequency values"""
 import pandas as pd
 import sys
 from scripts import read_pkl, save_pkl, set_lab_freq

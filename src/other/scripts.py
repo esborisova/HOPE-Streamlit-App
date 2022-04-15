@@ -1,4 +1,4 @@
-"""Scritps for computing CI, mean frequency values and creating WordClouds """
+"""Functions for pkl files, computing CI, plotting WordClouds """
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -7,16 +7,15 @@ import pandas as pd
 import sys
 
 
-
 def read_pkl(argument, path: str, data_prefix: str):
     """
     Reads a pickle file.
 
     Args:
         argument: An argument passed to the bash script.
-        path (str): The path to the folder with files 
+        path (str): The path to the folder with files
         data_prefix (str): The file name prefix.
-    
+
     Returns:
         pd.DataFrame: The pandas dataframe with data.
     """
@@ -31,11 +30,10 @@ def read_pkl(argument, path: str, data_prefix: str):
     return df
 
 
-
 def save_pkl(dataset: pd.DataFrame, argument, path: str, data_prefix: str):
     """
     Saves data to a pickle file.
-    
+
     Args:
         dataset (pd.DataFrame): The dataframe to save.
         argument: The argument passed to the bash script.
@@ -51,19 +49,18 @@ def save_pkl(dataset: pd.DataFrame, argument, path: str, data_prefix: str):
     dataset.to_pickle(new_path)
 
 
-
 def compute_ci(
     data: pd.DataFrame, array: str, upper_bound: str, lower_bound: str
 ) -> pd.DataFrame:
     """
     Computes 95% confidence interval (CI).
-    
+
     Args:
         data (pd.DataFrame): The dataframe with the dataset.
         array (str): The dataframe column with arrays of values.
         upper_bound (str): The name of the output dataframe column with CI upper bound values.
         lower_bound (str): The name of the output dataframe column with CI lower bound values.
-    
+
     Returns:
         pd.DataFrame: The input dataframe with two new columns (upper and lower bound values).
     """
@@ -84,12 +81,12 @@ def compute_ci(
 def plot_wordcloud(wordcloud, argument, path: str, data_prefix: str, save: bool):
     """
     Plots and saves a wordcloud.
-    
+
     Args:
         wordcloud: An object of class WordCloud.
         argument: An argument passed to the bash script.
-        path (str): The path to the folder with files. 
-        data_prefix (str): The file name prefix.   
+        path (str): The path to the folder with files.
+        data_prefix (str): The file name prefix.
         save (bool): If True, saves a wordcloud.
     """
 

@@ -19,7 +19,6 @@ from bokeh.transform import linear_cmap
 from typing import List, Dict
 
 
-
 def plot_line(
     x: str,
     y: str,

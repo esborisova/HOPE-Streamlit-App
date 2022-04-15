@@ -1,4 +1,4 @@
-"""A pipeline for creating WordClouds"""
+"""Pipeline for creating WordClouds"""
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import pandas as pd

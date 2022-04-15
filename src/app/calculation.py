@@ -43,4 +43,3 @@ def scale(data: Dict[int]) -> Dict[int]:
         data[key] = (math.log2(value)) * 3
 
     return data
-

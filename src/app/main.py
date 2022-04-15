@@ -2,7 +2,14 @@
 import streamlit as st
 import pandas as pd
 import networkx as nx
-from settings import read_pkl, smoothing, set_range_freq, set_lab_vader, set_lab_bert, choose_keywords
+from settings import (
+    read_pkl,
+    smoothing,
+    set_range_freq,
+    set_lab_vader,
+    set_lab_bert,
+    choose_keywords,
+)
 from calculation import bigram_freq, scale
 from plot import plot_line, plot_mean, plot_bar, plot_bigrams
 
@@ -80,12 +87,12 @@ st.markdown(
 ##################################
 
 # Inferno
-palette0 = [ 
-    [0, "#F0E442"],     # yellow
+palette0 = [
+    [0, "#F0E442"],  # yellow
     [0.01, "#d62728"],  # brick red
     [0.03, "#800080"],  # purple
-    [1.0, "#000000"],   # black
-]  
+    [1.0, "#000000"],  # black
+]
 
 # Blues
 palette1 = [

@@ -27,7 +27,6 @@ def read_pkl(label: str, path: str, data_prefix: str) -> pd.DataFrame:
     return df
 
 
-
 def smoothing(label: str) -> int:
     """
     Defines the smoothing value depending on the dataset.
@@ -76,7 +75,7 @@ def set_range_freq(label: str) -> List[str]:
 
 def set_lab_vader(label: str) -> Tuple[str, list]:
     """
-    Defines the name of the dataframe column with smoothed vader sentiment 
+    Defines the name of the dataframe column with smoothed vader sentiment
     scores and the (date) range of X axis.
 
     Args:
@@ -105,7 +104,7 @@ def set_lab_vader(label: str) -> Tuple[str, list]:
 
 def set_lab_bert(label: str) -> Tuple[str, list]:
     """
-    Defines the name of the dataframe column with smoothed bert sentiment 
+    Defines the name of the dataframe column with smoothed bert sentiment
     scores and the (date) range of X axis.
 
     Args:

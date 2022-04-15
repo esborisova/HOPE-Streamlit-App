@@ -1,4 +1,4 @@
-"""A pipeline for collecting mean"""
+"""Pipeline for collecting mean"""
 import pandas as pd
 import numpy as np
 import sys
