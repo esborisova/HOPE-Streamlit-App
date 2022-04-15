@@ -1,30 +1,11 @@
+"""Pipeline for creating an app"""
 import streamlit as st
-import math
-import plotly.express as px
-import plotly.graph_objects as go
 import pandas as pd
-import seaborn as sns
-import datetime
 import networkx as nx
-from icecream import ic
-from nltk.util import bigrams
-from bokeh.palettes import Spectral4
-from bokeh.models import (
-    BoxSelectTool,
-    Circle,
-    EdgesAndLinkedNodes,
-    HoverTool,
-    MultiLine,
-    NodesAndLinkedEdges,
-    Range1d,
-    TapTool,
-    Range1d,
-    ColumnDataSource,
-    LabelSet,
-)
-from bokeh.plotting import from_networkx
-from bokeh.transform import linear_cmap
-from functions import *
+from settings import read_pkl, smoothing, set_range_freq, set_lab_vader, set_lab_bert, choose_keywords
+from calculation import bigram_freq, scale
+from plot import plot_line, plot_mean, plot_bar, plot_bigrams
+
 
 ######################
 # Set up the layout #

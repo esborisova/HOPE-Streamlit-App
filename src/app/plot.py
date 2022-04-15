@@ -1,57 +1,23 @@
-import streamlit as st
-import math
-import datetime
+"""Functions for plotting graphs"""
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
-import seaborn as sns
 import networkx as nx
 from icecream import ic
-from nltk.util import bigrams
-import os
 from bokeh.palettes import Spectral4
 from bokeh.models import (
     BoxSelectTool,
     Circle,
-    EdgesAndLinkedNodes,
     HoverTool,
     MultiLine,
     NodesAndLinkedEdges,
-    Range1d,
     TapTool,
-    Range1d,
     ColumnDataSource,
     LabelSet,
 )
 from bokeh.plotting import from_networkx
 from bokeh.transform import linear_cmap
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
-
-def read_pkl(label: str, path: str, data_prefix: str) -> pd.DataFrame:
-
-    """
-    Reads a pickle file.
-
-    Args:
-        label (str): The name of the selectbox (f.ex., Restriktion, Omicron, etc.).
-
-        path (str): The path to the folder with files.
-
-        data_prefix (str): The file name prefix (f.ex., restriktion_hash.pkl: Label — restriktion, prefix — _hash.pkl).
-
-    Returns:
-        pd.DataFrame: The pandas dataframe with data.
-    """
-
-    label = label.lower()
-
-    filename = label + data_prefix
-    new_path = path + label + "/" + filename
-
-    df = pd.read_pickle(new_path)
-
-    return df
 
 
 def plot_line(
@@ -63,25 +29,18 @@ def plot_line(
     title: str,
     xaxis_range: list,
 ):
-
     """
     Plots the line graph with two lines.
     It depicts the distribution of two Y values across the same X values.
 
     Args:
         x (str): X values.
-
         y (str): The first Y values.
-
         y2 (str): The second Y values.
-
         line_name (str): The name of the line showing the distribution of the first Y values.
-
         line2_name (str): The name of the line showing the distribution of the second Y values.
-
-        title: The title of the line plot.
-
-        list: The range of X axis.
+        title (str): The title of the line plot.
+        xaxis_range (list): The range of X axis.
 
     Returns:
         fig: The line plot
@@ -138,29 +97,20 @@ def plot_mean(
     title: str,
     xaxis_range: list,
 ):
-
     """
     Plots the line graph with two lines.
     It depicts the distribution of two mean Y values across the same X values. It also shows the confidence interval.
 
     Args:
         x (str): X values.
-
         y (str): The first mean Y values.
-
         y2 (str): The second mean Y values.
-
         upper_bound (str): The values for the upper bound of the confidence interval.
-
         lower_bound (str): The values for the lower bound of the confidence interval.
-
         line_name (str): The name of the line showing the distribution of the first Y values.
-
         line2_name (str): The name of the line showing the distribution of the second Y values.
-
-        title: The title of the line plot.
-
-        list: The range of X axis.
+        title (str): The title of the line plot.
+        xaxis_range (list): The range of X axis.
 
     Returns:
         fig: The line plot.
@@ -235,18 +185,14 @@ def plot_mean(
 
 
 def plot_bar(x: str, y: str, title: str, colourscale: List[str]):
-
     """
     Plots the bar chart.
 
     Args:
         x (str): The X values.
-
         y (str): The Y values.
-
-        title: The title of the bar chart.
-
-        List[str]: The colour palette for the bars.
+        title (str): The title of the bar chart.
+        colourscale (List[str]): The colour palette for the bars.
 
     Returns:
         fig: The bar chart.
@@ -275,51 +221,6 @@ def plot_bar(x: str, y: str, title: str, colourscale: List[str]):
     return fig
 
 
-def bigram_freq(freq: Dict[str, int], G, scale: bool) -> Dict[str, int]:
-    """
-    Creates a dictionary of words (present in bigrams) and their frequencies.
-
-    Args:
-        freq (Dict[str, int]): A dictionary with all words from the data corpus and their frequency values.
-
-        G: A Networkx graph.
-
-        scale: A boolean value. If true, the logarithm of frequency values will be calculated.
-
-    Returns:
-        Dict[str, int]: The dictionary containg words from bigrams and their frequencies.
-    """
-
-    freq_dict = {}
-
-    for node in G.nodes():
-        for word in freq:
-            if word[0] == node:
-                if scale == True:
-                    freq_dict[word[0]] = (math.log2(word[1])) * 3
-                else:
-                    freq_dict[word[0]] = word[1]
-    return freq_dict
-
-
-def scale(data: Dict[int]) -> Dict[int]:
-    """
-    Calculates logarithm base 2 and multiplies the result by 3.
-
-    Args:
-        data (Dict[int]): A ditctionary with values.
-
-    Returns:
-        Dict[int]: The input dictonary with updated values.
-
-    """
-
-    for key, value in data.items():
-        data[key] = (math.log2(value)) * 3
-
-    return data
-
-
 def plot_bigrams(
     G,
     word_freq: Dict[str, int],
@@ -329,28 +230,20 @@ def plot_bigrams(
     palette_edges: List[str],
     title: str,
 ):
-
     """
-    Plots node graph.
+    Plots a node graph.
 
     Args:
         G: A Networkx graph.
-
         word_freq (Dict[str, int]):  A dictionary of bigram members and their frequencies across the dataset.
-
         co_occurence (Dict[str, int]): A dictionaty of bigrams and their co-occurence values.
-
-        pos (Dict[int]): A dictionary of positions keyed by node.
-
+        pos (Dict[int]): A dictionary of positions keyed by a node.
         palette_nodes (List[str]): A colour palette for the nodes.
-
         palette_edges (List[str]):  A colour palette for the edges.
-
         title (str): The title of the node graph.
 
     Returns:
         plot: The node graph.
-
     """
 
     from bokeh.plotting import figure
@@ -434,127 +327,3 @@ def plot_bigrams(
     plot.renderers.append(labels)
 
     return plot
-
-
-def smoothing(label: str) -> int:
-    """
-    Defines the smoothing value depending on the dataset.
-
-    Args:
-       label (str): The name of the dataset (from the menu).
-
-    Returns:
-        int: The smoothing value.
-    """
-
-    smoothing_value = 0
-
-    if (label == "Vaccin") or (label == "Corona"):
-        smoothing_value = 5000
-    else:
-        smoothing_value = 500
-
-    return smoothing_value
-
-
-def set_range_freq(label: str) -> List[str]:
-    """
-    Defines the (date) range of X axis for tweet frequency graph.
-
-    Args:
-       label (str): The name of the dataset (from the menu).
-
-    Returns:
-       List[str]: The range of X axis.
-    """
-
-    xaxis_range = None
-
-    if label == "Omicron":
-        xaxis_range = [datetime.datetime(2021, 11, 1), datetime.datetime(2022, 1, 31)]
-
-    elif (label == "Vaccin") or (label == "Corona"):
-        xaxis_range = [datetime.datetime(2020, 11, 1), datetime.datetime(2022, 1, 31)]
-
-    else:
-        xaxis_range = [datetime.datetime(2020, 11, 1), datetime.datetime(2022, 1, 31)]
-
-    return xaxis_range
-
-
-def set_lab_vader(label: str) -> Tuple[List[str], str]:
-    """
-    Defines the name of the dataframe column with smoothed vader sentiment scores and the (date) range of X axis.
-
-    Args:
-       label (str): The name of the dataset (from the menu).
-
-    Returns:
-        y2_name (str): The name of the dataframe column with smoothed Y values.
-
-        Tuple[List[str], str]: The range of X axis and the label for Y values.
-    """
-
-    y2_name = None
-    xaxis_range = None
-
-    if label == "Omicron":
-        y2_name = "s500_compound"
-        xaxis_range = [datetime.datetime(2021, 11, 1), datetime.datetime(2022, 1, 31)]
-
-    elif (label == "Vaccin") or (label == "Corona"):
-        y2_name = "s5000_compound"
-        xaxis_range = [datetime.datetime(2020, 12, 15), datetime.datetime(2022, 1, 25)]
-
-    else:
-        y2_name = "s500_compound"
-        xaxis_range = [datetime.datetime(2020, 12, 15), datetime.datetime(2022, 1, 25)]
-    return y2_name, xaxis_range
-
-
-def set_lab_bert(label: str) -> Tuple[List[str], str]:
-    """
-    Defines the name of the dataframe column with smoothed bert sentiment scores and the (date) range of X axis.
-
-    Args:
-       label (str): The name of the dataset (from the menu).
-
-    Returns:
-        y2_name (str): The name of the dataframe column with smoothed Y values.
-
-        Tuple[List[str], str]: The range of X axis and the label for Y values.
-    """
-
-    y2_name = None
-    xaxis_range = None
-
-    if label == "Omicron":
-        y2_name = "s500_polarity_score_z"
-        xaxis_range = [datetime.datetime(2021, 11, 1), datetime.datetime(2022, 1, 31)]
-
-    elif (label == "Vaccin") or (label == "Corona"):
-        y2_name = "s5000_polarity_score_z"
-        xaxis_range = [datetime.datetime(2020, 12, 15), datetime.datetime(2022, 1, 25)]
-
-    else:
-        y2_name = "s500_polarity_score_z"
-        xaxis_range = [datetime.datetime(2020, 12, 15), datetime.datetime(2022, 1, 25)]
-
-    return y2_name, xaxis_range
-
-
-def choose_keywords(label: str, keywords_dict: Dict[str]) -> List[str]:
-    """
-    Returns the relevant list of keywords.
-
-    Args:
-       label (str): The name of the dataset (from the menu).
-
-       keywords_dict (Dict[str]): The dictionary with keywords per dataset.
-
-    Returns:
-        List[str]: The list of keywords.
-    """
-    for i in keywords_dict:
-        if i == label:
-            return keywords_dict[i]

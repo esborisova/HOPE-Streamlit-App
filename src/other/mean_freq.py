@@ -1,44 +1,7 @@
-from fileinput import filename
+"""A pipeline for collecting mean frequency values"""
 import pandas as pd
-import numpy as np
-import seaborn as sns
-import os
 import sys
-
-
-def read_pkl(argument, path: str, data_prefix: str):
-
-    label = argument.lower()
-
-    filename = label + data_prefix
-    new_path = path + label + "/" + filename
-
-    df = pd.read_pickle(new_path)
-
-    return df
-
-
-def save_pkl(dataset: pd.DataFrame, argument, path: str, data_prefix: str):
-
-    label = argument.lower()
-    new_path = path + label + "/"
-    filename = label + data_prefix
-    new_path = new_path + filename
-
-    dataset.to_pickle(new_path)
-
-
-def set_lab_freq(label: str):
-
-    column_name = None
-
-    if (label == "vaccin") or (label == "corona"):
-        column_name = "s5000_nr_of_tweets"
-
-    else:
-        column_name = "s500_nr_of_tweets"
-
-    return column_name
+from scripts import read_pkl, save_pkl, set_lab_freq
 
 
 df = read_pkl(str(sys.argv[1]), "../data/", ".pkl")
